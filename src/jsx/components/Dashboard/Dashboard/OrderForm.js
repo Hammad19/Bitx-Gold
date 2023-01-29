@@ -29,11 +29,15 @@ const OrderForm = () =>{
 	//});
 	return(
 		<>
-			<form>
-				<div className="sell-blance">
+			<form className='flex-direction-row justify-content-center'>
+				<div className="sell-blance" >
+					<br></br>
+					<br></br>
 					<br></br>
 					<label className="form-label text-primary">Amount</label>
 					<div className="form-label blance"><span>Amount Already Staked:</span><p>$3,123.9</p></div>
+					<br></br>
+					<br></br>
 					<div className="input-group">
 						<input type="text" className="form-control" placeholder="0.00" />
 						<span className="input-group-text">USDT</span>
@@ -71,7 +75,9 @@ const OrderForm = () =>{
 				{/* <div className="text-center">
 					<Link to={"/exchange"} className="btn btn-primary w-75">Stake</Link>
 				</div> */}
-					
+
+<br></br>
+					<br></br>	
 			</form>
 		</>
 	)
