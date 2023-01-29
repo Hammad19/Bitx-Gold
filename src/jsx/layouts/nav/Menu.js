@@ -71,7 +71,7 @@ export const MenuList = [
         title:'Stake',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">currency_bitcoin</i>,
-        to: 'dashboard',
+        to: 'stake',
     },
 
     //Affiliate Awards

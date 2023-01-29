@@ -37,6 +37,7 @@ import Banking from './components/Crypto/Banking';
 import Exchange from './components/Crypto/Exchange';
 import Buy from './components/Crypto/Buy';
 import Sell from './components/Crypto/Sell';
+import Stake from './components/Crypto/Stake';
 import CoinDetails from './components/Crypto/CoinDetails';
 
 //Report 
@@ -147,7 +148,7 @@ const Markup = () => {
   const allroutes = [
     /// Dashboard
     { url: "", component: <Home /> },
-    { url: "dashboard", component: <Home /> },
+    { url: "dashboard", component: <DashboardDark /> },
     { url: "dashboard-dark", component: <DashboardDark /> },
     { url: "index-1", component: <Dashboard2 /> },
     { url: "index-3", component: <Dashboard3 /> },
@@ -169,6 +170,7 @@ const Markup = () => {
     {url:"exchange", component: <Exchange/>},
     {url:"buy", component: <Buy/>},
     {url:"sell", component: <Sell/>},
+    {url:"stake", component: <Stake/>},
     {url:"coin-details", component: <CoinDetails/>},
 
 

@@ -10,6 +10,7 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import BalanceCardSlider from './Dashboard/BalanceCardSlider';
 //import MorrisDonught from './Dashboard/MorrisDonught';
 import OrderForm from './Dashboard/OrderForm';
+
 //import ServerStatusBar from './Dashboard/ServerStatusBar';
 import {LtcIcon, BtcIcon, XtzIcon, EthIcon} from './SvgIcon';
 
@@ -225,7 +226,7 @@ const DashboardDark = () => {
 						</div>
 					</div>
 				</div>
-				{/* <div className="col-xl-4">
+				<div className="col-xl-4">
 					<div className="row">
 						<div className="col-xl-12 col-sm-6">
 							<div className="card h-auto">
@@ -384,7 +385,7 @@ const DashboardDark = () => {
 							</div>
 						</div>
 					</div>	
-				</div> */}
+				</div>
 			</div>		
 		</>
 	)
