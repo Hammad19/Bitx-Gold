@@ -117,21 +117,36 @@ export function loadingToggleAction(status) {
 }
 
 //Create function for requesting to connect with MetaMask
-export function connectToMetaMask(navigate) {
+export function connectToMetaMask(navigate,token) {
     return (dispatch) => {
+
         window.ethereum.enable().then((accounts) => {
-            console.log(accounts[0]);
-            dispatch(connectedToMetaMask(accounts[0]));
-            navigate('/dashboard');  
+
+            console.log(token);
+            dispatch(connectedToMetaMask(token));
+            
+            console.log('account');
+            navigate('/dashboard');
+            
+        
+            
         });
+
+       
+
+
+
+        
+            
+        
     };
 }
 
 //Create function for requesting to connect with MetaMask
-export function connectedToMetaMask(account) {
+export function connectedToMetaMask(token) {
     return {
         type: CONNECTED_TO_METAMASK,
-        payload: account,
+        payload: token,
     };
 }
 

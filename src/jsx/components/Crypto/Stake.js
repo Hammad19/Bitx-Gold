@@ -15,6 +15,16 @@ import { useState } from "react";
 const Stake = () => {
   const [startTime, setstartTime] = useState("2023-01-01T00:00:00");
   const [timeDifference, setTimeDifference] = useState(null);
+  const [totalAmountStaked, setTotalAmountStaked] = useState(0);
+  const [totalAmountClaimed, setTotalAmountClaimed] = useState(0);
+
+  const[amountToStake,SetAmountToStake] = useState(0);
+
+  const [amountToClaim, setAmountToClaim] = useState(0);
+
+  const [amountToWithdraw, setAmountToWithdraw] = useState(0);
+
+
 
   useEffect(() => {
     const startTimeObject = new Date(startTime);
@@ -192,7 +202,7 @@ const Stake = () => {
               <div className="card-body pb-2">
                 <div className="card-wiget-info">
                   <br></br>
-                  <h4 className="count-num">0.00 BXG</h4>
+                  <h4 className="count-num">0.00 USDT</h4>
                   <p>Total Amount Staked</p>
                   <div>
                     {/* <svg className="me-1" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

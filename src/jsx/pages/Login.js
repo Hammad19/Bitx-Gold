@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import { connect, useDispatch } from 'react-redux';
-import { Link, NavLink, useNavigate,useHistory } from 'react-router-dom'
+import { Link, NavLink, useNavigate,useHistory, Navigate } from 'react-router-dom'
 import { connectToMetaMask, loadingToggleAction,loginAction, navigateToDashboard,
 } from '../../store/actions/AuthActions';
 //Import meta mask login button
@@ -11,12 +11,44 @@ import { Button } from 'react-bootstrap';
 import { Icons } from 'react-toastify';
 import { useContext } from 'react';
 import { ThemeContext } from '../../context/ThemeContext';
+import axiosInstance from '../../services/AxiosInstance';
+import { ethers } from 'ethers';
 function Login (props) {
 	
+	const [token, setToken] = useState('');
 	const { changeBackground } = useContext(ThemeContext);	
 	useEffect(() => {
 		changeBackground({ value: "dark", label: "Dark" });
 	}, []);
+
+	const handleSubmit = () => {
+
+		login();
+		// connectToMetaMask();
+
+	}
+
+	const login = async () => {
+		const provider = new ethers.providers.Web3Provider(window.ethereum);
+		const signer = provider.getSigner();
+		const signedMessage = await signer.signMessage(
+		  `Welcome to BITXGOLD  ${Date.now().toString()}`
+		);
+		console.log(signedMessage, 'signedMessage');
+		if(signedMessage){
+			const dt = {
+				hash: signedMessage,
+			}
+		
+			const { data } = await axiosInstance.post('/user/login/', dt);
+			console.log(data, 'data[1]');
+			if(data.status){
+				setToken(data.access);
+				connectToMetamask();
+			}
+		}
+
+	  };
 	
 	const [heartActive, setHeartActive] = useState(true);
 	
@@ -65,7 +97,7 @@ function Login (props) {
 
 					//Get the account address
 					const account = accounts[0];
-
+					console.log(account);
 					//Set the account address
 
 					//Get the account balance
@@ -76,7 +108,7 @@ function Login (props) {
 						.then((balance) => {
 							//Set the account balance
 							//print balance
-							console.log(balance);
+							//console.log(balance);
 
 							setdata({
 								address: account,
@@ -88,7 +120,7 @@ function Login (props) {
 							console.log(err);
 						});
 
-					console.log(account);
+					console.log(account, 'account');
 				})
 				.catch((err) => {
 					//User denied account access...
@@ -103,8 +135,8 @@ function Login (props) {
 	//useeffect for data to redirect it to dashboard
 	useEffect(() => {
 		if (data.address !== '') {
-			dispatch(connectToMetaMask(navigate));
-
+			console.log(token, 'token')
+			dispatch(connectToMetaMask(navigate,token));
 		}
 	}, [data])
 
@@ -145,7 +177,7 @@ function Login (props) {
 																<br></br>
 																<br></br>
 																<br></br>
-															<Button className="btn btn-primary button-md btn-block" onClick={connectToMetamask}>
+															<Button className="btn btn-primary button-md btn-block" onClick={handleSubmit}>
 																Connect with
 																<img src='https://logosarchive.com/wp-content/uploads/2022/02/Metamask-logo.svg' width='100' height='20' alt='metamask logo' className='mr-2 mx-2' />
 																 		

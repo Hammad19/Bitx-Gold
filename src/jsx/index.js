@@ -16,11 +16,6 @@ import Footer from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrollToTop";
 /// Dashboard
 import Home from "./components/Dashboard/Home";
-import DashboardDark from "./components/Dashboard/DashboardDark";
-import Dashboard2 from "./components/Dashboard/Dashboard2";
-import Dashboard3 from "./components/Dashboard/Dashboard3";
-import Dashboard4 from "./components/Dashboard/Dashboard4";
-import Dashboard5 from "./components/Dashboard/Dashboard5";
 
 
 //Trading
@@ -148,12 +143,7 @@ const Markup = () => {
   const allroutes = [
     /// Dashboard
     { url: "", component: <Home /> },
-    { url: "dashboard", component: <DashboardDark /> },
-    { url: "dashboard-dark", component: <DashboardDark /> },
-    { url: "index-1", component: <Dashboard2 /> },
-    { url: "index-3", component: <Dashboard3 /> },
-    { url: "index-4", component: <Dashboard4 /> },
-    { url: "index-5", component: <Dashboard5 /> },
+    { url: "dashboard", component: <Home /> },
     
     
     //Trading

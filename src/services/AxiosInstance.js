@@ -2,7 +2,7 @@ import axios from 'axios';
 import { store } from '../store/store';
 
 const axiosInstance = axios.create({
-    baseURL: `https://react-course-b798e-default-rtdb.firebaseio.com/`,
+    baseURL: `http://localhost:4000`,
 });
 
 axiosInstance.interceptors.request.use((config) => {
