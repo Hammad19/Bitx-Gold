@@ -19,6 +19,7 @@ import { Button } from "react-bootstrap";
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import axiosInstance from "../../services/AxiosInstance";
+import toast, { Toaster } from "react-hot-toast";
 import { ethers } from "ethers";
 function Login(props) {
   const dispatch = useDispatch();
@@ -44,76 +45,47 @@ function Login(props) {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
+      //Request account access if needed
+      const { chainId } = await provider.getNetwork();
+      const addresses = await provider.send("eth_requestAccounts", []);
+      const address = addresses[0];
+      const balance = await provider.getBalance(address);
 
-      const signedMessage = await signer.signMessage(
-        `Welcome to BITXGOLD  ${Date.now().toString()}`
-      );
+      if (chainId === 97) {
+        setdata({
+          address: address,
+          Balance: balance,
+        });
+        const signedMessage = await signer.signMessage(
+          `Welcome to BITXGOLD  ${Date.now().toString()}`
+        );
 
-      console.log(signedMessage, "signedMessage");
-      if (signedMessage) {
-        const dt = {
-          hash: signedMessage,
-        };
+        console.log(signedMessage, "signedMessage");
+        if (signedMessage) {
+          const dt = {
+            hash: signedMessage,
+          };
 
-        const { data } = await axiosInstance.post("/user/login/", dt);
-        console.log(data, "data[1]");
-        if (data.status) {
-          setToken(data.access);
-          connectToMetamask();
+          const { data } = await axiosInstance.post("/user/login/", dt);
+          console.log(data, "data[1]");
+          if (data.status) {
+            setToken(data.access);
+          }
         }
+      } else {
+        toast.error("Invalid Network. Kindly switch to BNB Testnet", {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
       }
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message, {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
     }
   };
 
-  //Create Connect to metamask function
-  const connectToMetamask = () => {
-    //Check if metamask is installed
-    if (window.ethereum) {
-      //Request account access if needed
-      window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then((accounts) => {
-          //Connect to the blockchain
-          // window.web3 = new Web3(window.ethereum);
-
-          //Get the account address
-          const account = accounts[0];
-          console.log(account);
-          //Set the account address
-
-          //Get the account balance
-          window.ethereum
-            .request({
-              method: "eth_getBalance",
-              params: [account, "latest"],
-            })
-            .then((balance) => {
-              //Set the account balance
-              //print balance
-              //console.log(balance);
-
-              setdata({
-                address: account,
-                Balance: balance,
-              });
-            })
-            .catch((err) => {
-              //Handle error
-              alert(err.message);
-            });
-
-          console.log(account, "account");
-        })
-        .catch((err) => {
-          //User denied account access...
-          alert(err.message);
-        });
-    } else {
-      alert("Please install MetaMask!");
-    }
-  };
   //useeffect for data to redirect it to dashboard
   useEffect(() => {
     if (data.address !== "") {
@@ -124,6 +96,7 @@ function Login(props) {
 
   return (
     <div className="page-wraper">
+      <Toaster />
       <div className="browse-job login-style3">
         <div
           className="bg-img-fix overflow-hidden "
@@ -132,13 +105,15 @@ function Login(props) {
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             height: "100vh",
-          }}>
+          }}
+        >
           <div className="row gx-0">
             <div className="col-xl-4 col-lg-5 col-md-6 col-sm-12 vh-100 bg-white ">
               <div
                 id="mCSB_1"
                 className="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside"
-                style={{ maxHeight: "653px" }}>
+                style={{ maxHeight: "653px" }}
+              >
                 <div
                   id="mCSB_1_container"
                   className="mCSB_container"
@@ -147,7 +122,8 @@ function Login(props) {
                     top: "0",
                     left: "0",
                     dir: "ltr",
-                  }}>
+                  }}
+                >
                   <div className="login-form style-2">
                     <div className="card-body">
                       <div className="logo-header">
@@ -163,7 +139,8 @@ function Login(props) {
                         <div className="tab-content w-100" id="nav-tabContent">
                           <div
                             className="tab-pane fade active show"
-                            id="nav-personal">
+                            id="nav-personal"
+                          >
                             {props.errorMessage && (
                               <div className="bg-red-300 text-red-900 border border-red-900 p-1 my-2">
                                 {props.errorMessage}
@@ -182,7 +159,8 @@ function Login(props) {
                               <br></br>
                               <Button
                                 className="btn btn-primary button-md btn-block"
-                                onClick={handleSubmit}>
+                                onClick={handleSubmit}
+                              >
                                 Connect with
                                 <img
                                   src="https://logosarchive.com/wp-content/uploads/2022/02/Metamask-logo.svg"
