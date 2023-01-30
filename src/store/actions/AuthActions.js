@@ -123,8 +123,9 @@ export function connectToMetaMask(navigate,token) {
         window.ethereum.enable().then((accounts) => {
 
             console.log(token);
+
+            localStorage.setItem('userDetails', JSON.stringify(token));
             dispatch(connectedToMetaMask(token));
-            
             console.log('account');
             navigate('/dashboard');
             

@@ -40,7 +40,7 @@ const OrderForm = () =>{
 					<br></br>
 					<div className="input-group">
 						<input type="text" className="form-control" placeholder="0.00" />
-						<span className="input-group-text">USDT</span>
+						<span className="input-group-text">BXG</span>
 					</div>
 				</div>
 				{/* <div className="sell-blance">
