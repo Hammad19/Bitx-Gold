@@ -10,25 +10,106 @@ import TicketSoldChart from "./Exchange/TicketSoldChart";
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";
+import bitX from "../../../contractAbis/BitX.json";
+import bitXStake from "../../../contractAbis/BitXStaking.json";
+import { ethers } from "ethers";
+import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
-const Stake = () => {
+const Stake = async () => {
   const [startTime, setstartTime] = useState("2022-01-01T00:00:00");
   const [timeDifference, setTimeDifference] = useState(null);
   const [totalAmountStaked, setTotalAmountStaked] = useState(0);
   const [totalAmountClaimed, setTotalAmountClaimed] = useState(0);
-
   const [amountToStake, SetAmountToStake] = useState(0);
-
   const [amountToUnstakeClaim, SetamountToUnstakeClaim] = useState(0);
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const addresses = await provider.send("eth_requestAccounts", []);
+  const address = addresses[0];
+  const staking = new ethers.Contract(bitXStake.address, bitXStake.abi, signer);
+  const bxg = new ethers.Contract(bitX.address, bitX.abi, signer);
 
   //handleclaim
-  const handleClaim = () => {
-    console.log("claim");
+  const handleStake = async () => {
+    try {
+      let stakingAmount; // input from user
+      const amount = await ethers.utils.parseEther(stakingAmount);
+      const approvalAmount = await bxg.allowance(address, bitXStake.address);
+      if (approvalAmount < amount) {
+        var bxgApprove = await (await bxg.approve(amount)).wait();
+      }
+      if (bxgApprove.events) {
+        const tx = await (await staking.withdraw(amount)).wait();
+        if (tx.events) {
+          toast.success(tx.blockHash, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+          // call api
+        } else {
+          toast.error("Transaction Failed", {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+      }
+    } catch (error) {
+      toast.error(error, {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
   };
 
-  const handleUnstake = () => {
-    console.log("unstake");
+  const handleUnstake = async () => {
+    try {
+      let stakingAmount; // input from user
+      const amount = await ethers.utils.parseEther(stakingAmount);
+      const tx = await (await staking.unStake(amount)).wait();
+      if (tx.events) {
+        toast.success(tx.blockHash, {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
+        // call api
+      } else {
+        toast.error("Transaction Failed", {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
+      }
+    } catch (error) {
+      toast.error(error, {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
+  };
+
+  const handleClaim = async () => {
+    try {
+      let stakingAmount; // input from user
+      const amount = await ethers.utils.parseEther(stakingAmount);
+      const tx = await (await staking.stake(amount)).wait();
+      if (tx.events) {
+        toast.success(tx.blockHash, {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
+        // call api
+      } else {
+        toast.error("Transaction Failed", {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
+      }
+    } catch (error) {
+      toast.error(error, {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
   };
 
   useEffect(() => {
@@ -77,13 +158,15 @@ const Stake = () => {
   }, [bxgvalue]);
   return (
     <>
+      <Toaster />
       <div
         className="row "
         style={{
           justifyContent: "center",
           alignItems: "center",
           marginTop: "50px",
-        }}>
+        }}
+      >
         <div className="col-xl-6" style={{ height: "100%" }}>
           <div className="col-xl-12 col-sm-6">
             <div className="card h-auto">
@@ -94,19 +177,22 @@ const Stake = () => {
                       <Nav
                         className="nav nav-tabs"
                         eventKey="nav-tab2"
-                        role="tablist">
+                        role="tablist"
+                      >
                         <Nav.Link
                           as="button"
                           className="nav-link"
                           eventKey="Navbuy"
-                          type="button">
+                          type="button"
+                        >
                           Stake
                         </Nav.Link>
                         <Nav.Link
                           as="button"
                           className="nav-link"
                           eventKey="Navsell"
-                          type="button">
+                          type="button"
+                        >
                           {timeDifference?.months > 0 ? "Claim" : "Unstake"}
                         </Nav.Link>
                       </Nav>
@@ -159,9 +245,11 @@ const Stake = () => {
                             <div className="text-center">
                               <Link
                                 //in the onclick function set start time to current time
-                                onClick={() => setstartTime(new Date())}
+                                // onClick={() => setstartTime(new Date())}
+                                onClick={handleStake}
                                 //to={"/exchange"}
-                                className="btn btn-success w-75">
+                                className="btn btn-success w-75"
+                              >
                                 Stake
                               </Link>
                             </div>
@@ -214,7 +302,8 @@ const Stake = () => {
                                     ? () => handleClaim()
                                     : () => handleUnstake()
                                 }
-                                className="btn btn-danger w-75">
+                                className="btn btn-danger w-75"
+                              >
                                 {timeDifference?.months > 0
                                   ? "Claim"
                                   : "Unstake"}

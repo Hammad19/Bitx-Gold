@@ -10,18 +10,59 @@ import TicketSoldChart from "./Exchange/TicketSoldChart";
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";
+import usdt from "../../../contractAbis/USDT.json";
+import bitXSwap from "../../../contractAbis/BitXGoldSwap.json";
+import { ethers } from "ethers";
+import toast, { Toaster } from "react-hot-toast";
 
-const Buy = () => {
+const Buy = async () => {
   // create a static value of 6.19931
   const [value, setValue] = React.useState(6.19931);
   const [bxgvalue, setBxgvalue] = React.useState(0);
   //total usdt value
   const [totalUsd, setTotalUsd] = React.useState(bxgvalue * value);
 
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const addresses = await provider.send("eth_requestAccounts", []);
+  const address = addresses[0];
+  const swap = new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer);
+  const usdtToken = new ethers.Contract(usdt.address, usdt.abi, signer);
+
   //create handlebuy
 
-  const handleBuy = () => {
-    console.log("buy");
+  const handleBuy = async () => {
+    try {
+      let buyAmount; // input from user
+      const amount = await ethers.utils.parseEther(buyAmount);
+      const approvalAmount = await usdtToken.allowance(
+        address,
+        bitXSwap.address
+      );
+      if (approvalAmount < amount) {
+        var bxgApprove = await (await usdtToken.approve(amount)).wait();
+      }
+      if (bxgApprove.events) {
+        const tx = await (await swap.swap(amount)).wait();
+        if (tx.events) {
+          toast.success(tx.blockHash, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+          // call api
+        } else {
+          toast.error("Transaction Failed", {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+      }
+    } catch (error) {
+      toast.error(error, {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
   };
 
   const handleChange = (e) => {
@@ -34,13 +75,15 @@ const Buy = () => {
   }, [bxgvalue]);
   return (
     <>
+      <Toaster />
       <div
         className="row "
         style={{
           justifyContent: "center",
           alignItems: "center",
           marginTop: "50px",
-        }}>
+        }}
+      >
         <div className="col-xl-6" style={{ height: "100%" }}>
           <div className="card">
             <div className="card-body pb-2">
@@ -75,7 +118,8 @@ const Buy = () => {
                             <div
                               style={{ color: "darkgrey" }}
                               type="text"
-                              className="custom-react-select form-control mb-3">
+                              className="custom-react-select form-control mb-3"
+                            >
                               {" "}
                               <img
                                 src={bxgicon}
@@ -108,7 +152,8 @@ const Buy = () => {
                             <div
                               style={{ color: "darkgrey" }}
                               type="text"
-                              className="custom-react-select form-control mb-3">
+                              className="custom-react-select form-control mb-3"
+                            >
                               <img
                                 src={usdicon}
                                 width="25"

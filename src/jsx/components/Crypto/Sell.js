@@ -10,19 +10,60 @@ import TicketSoldChart from "./Exchange/TicketSoldChart";
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";
+import bitX from "../../../contractAbis/BitX.json";
+import bitXSwap from "../../../contractAbis/BitXGoldSwap.json";
+import { ethers } from "ethers";
+import toast, { Toaster } from "react-hot-toast";
 
-const Sell = () => {
+const Sell = async () => {
   const [Usd, setUsd] = React.useState(0);
 
   // create a static value of 0.16130827463
   const [value, setValue] = React.useState(0.16130827463);
   const [totalbxgvalue, settotalBxgvalue] = React.useState(Usd * value);
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const addresses = await provider.send("eth_requestAccounts", []);
+  const address = addresses[0];
+  const swap = new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer);
+  const bitXGold = new ethers.Contract(bitX.address, bitX.abi, signer);
   //total usdt value
 
   //create handlesell
 
-  const handleSell = () => {
-    console.log("sell");
+  const handleSell = async () => {
+    try {
+      let sellAmount; // input from user
+      const amount = await ethers.utils.parseEther(sellAmount);
+      const approvalAmount = await bitXGold.allowance(
+        address,
+        bitXSwap.address
+      );
+      if (approvalAmount < amount) {
+        var bxgApprove = await (await bitXGold.approve(amount)).wait();
+      }
+      if (bxgApprove.events) {
+        const tx = await (await swap.swapSell(amount)).wait();
+        if (tx.events) {
+          toast.success(tx.blockHash, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+          // call api
+        } else {
+          toast.error("Transaction Failed", {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+      }
+    } catch (error) {
+      toast.error(error, {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
   };
 
   const handleChange = (e) => {
@@ -41,7 +82,8 @@ const Sell = () => {
           justifyContent: "center",
           alignItems: "center",
           marginTop: "50px",
-        }}>
+        }}
+      >
         <div className="col-xl-6" style={{ height: "100%" }}>
           <div className="card">
             <div className="card-body pb-2">
@@ -76,7 +118,8 @@ const Sell = () => {
                             <div
                               style={{ color: "darkgrey" }}
                               type="text"
-                              className="custom-react-select form-control mb-3">
+                              className="custom-react-select form-control mb-3"
+                            >
                               <img
                                 src={usdicon}
                                 width="25"
@@ -109,7 +152,8 @@ const Sell = () => {
                             <div
                               style={{ color: "darkgrey" }}
                               type="text"
-                              className="custom-react-select form-control mb-3">
+                              className="custom-react-select form-control mb-3"
+                            >
                               {" "}
                               <img
                                 src={bxgicon}
@@ -131,7 +175,8 @@ const Sell = () => {
                   <div className="text-center mt-4 mb-4">
                     <Link
                       onClick={handleSell}
-                      className="btn btn-warning mr-0 ">
+                      className="btn btn-warning mr-0 "
+                    >
                       SELL NOW
                     </Link>
                   </div>
