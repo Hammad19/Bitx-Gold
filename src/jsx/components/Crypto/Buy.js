@@ -16,46 +16,38 @@ import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
-
-const Buy = async () => {
+const Buy = () => {
   // create a static value of 6.19931
 
- 
   const value = 6.19931;
   const [bxgvalue, setBxgvalue] = useState(0);
   //total usdt value
   const [totalUsd, setTotalUsd] = useState(bxgvalue * value);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const [addresses,setaddresses] = useState([]);
-  const [address,setaddress] = useState();
-  const [swap,setswap] = useState(); 
-  const [usdtToken,setusdtToken] = useState();
+  const [addresses, setaddresses] = useState([]);
+  const [address, setaddress] = useState();
+  const [swap, setswap] = useState();
+  const [usdtToken, setusdtToken] = useState();
   //create handlebuy
 
   const getSellData = async () => {
-
     setaddresses(await provider.send("eth_requestAccounts", []));
     setaddress(addresses[0]);
     setswap(new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer));
     setusdtToken(new ethers.Contract(usdt.address, usdt.abi, signer));
-};
+  };
 
-useEffect(() => {
-getSellData();
-}, []);
-
+  useEffect(() => {
+    getSellData();
+  }, []);
 
   const handleBuy = async () => {
     try {
-      const amount = await ethers.utils.parseEther(bxgvalue);
-      const approvalAmount = await usdtToken.allowance(
-        address,
-        bitXSwap.address
-      );
-      if (approvalAmount < bxgvalue.toString()) {
-        var bxgApprove = await (await usdtToken.approve(bitXSwap.address, amount)).wait();
-      }
+      const amount = ethers.utils.parseEther(bxgvalue);
+      const bxgApprove = await (
+        await usdtToken.approve(bitXSwap.address, (amount+amount))
+      ).wait();
       if (bxgApprove.events) {
         const tx = await (await swap.swap(amount)).wait();
         if (tx.events) {
