@@ -16,7 +16,7 @@ import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
-const Sell =  () => {
+const Sell = () => {
   const [Usd, setUsd] = React.useState(0);
 
   // create a static value of 0.16130827463
@@ -25,54 +25,54 @@ const Sell =  () => {
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const [addresses,setaddresses] = useState([]);
-  const [address,setaddress] = useState();
-  const [swap,setswap] = useState(); 
-  const [bitXGold,setbitXGold] = useState();
+  const [addresses, setaddresses] = useState([]);
+  const [address, setaddress] = useState();
+  const [swap, setswap] = useState();
+  const [bitXGold, setbitXGold] = useState();
   //total usdt value
 
   //create handlesell
 
-    const getSellData = async () => {
-
-        setaddresses(await provider.send("eth_requestAccounts", []));
-        setaddress(addresses[0]);
-        setswap(new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer));
-        setbitXGold(new ethers.Contract(bitX.address, bitX.abi, signer));
-    };
+  const getSellData = async () => {
+    setaddresses(await provider.send("eth_requestAccounts", []));
+    setaddress(addresses[0]);
+    setswap(new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer));
+    setbitXGold(new ethers.Contract(bitX.address, bitX.abi, signer));
+  };
 
   useEffect(() => {
     getSellData();
-    }, []);
+  }, []);
 
   const handleSell = async () => {
     try {
-      let sellAmount; // input from user
-      const amount = await ethers.utils.parseEther(sellAmount);
+      const amount = await ethers.utils.parseEther(Usd);
       const approvalAmount = await bitXGold.allowance(
         address,
         bitXSwap.address
       );
-      if (approvalAmount < amount) {
-        var bxgApprove = await (await bitXGold.approve(amount)).wait();
-      }
-      if (bxgApprove.events) {
-        const tx = await (await swap.swapSell(amount)).wait();
-        if (tx.events) {
-          toast.success(tx.blockHash, {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
-          // call api
-        } else {
-          toast.error("Transaction Failed", {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
+      if (approvalAmount < Usd.toString()) {
+        const bxgApprove = await (
+          await bitXGold.approve(bitXSwap.address, amount)
+        ).wait();
+        if (bxgApprove.events) {
+          const tx = await (await swap.swapSell(amount)).wait();
+          if (tx.events) {
+            toast.success(tx.blockHash, {
+              position: "top-center",
+              style: { minWidth: 180 },
+            });
+            // call api
+          } else {
+            toast.error("Transaction Failed", {
+              position: "top-center",
+              style: { minWidth: 180 },
+            });
+          }
         }
       }
     } catch (error) {
-      toast.error(error, {
+      toast.error("Transaction Failed", {
         position: "top-center",
         style: { minWidth: 180 },
       });
@@ -89,6 +89,7 @@ const Sell =  () => {
   }, [Usd]);
   return (
     <>
+      <Toaster />
       <div
         className="row "
         style={{
@@ -187,7 +188,9 @@ const Sell =  () => {
 
                   <div className="text-center mt-4 mb-4">
                     <Link
-                      onClick={handleSell}
+                      onClick={() => {
+                        handleSell();
+                      }}
                       className="btn btn-warning mr-0 "
                     >
                       SELL NOW

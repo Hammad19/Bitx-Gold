@@ -48,14 +48,13 @@ getSellData();
 
   const handleBuy = async () => {
     try {
-      let buyAmount; // input from user
-      const amount = await ethers.utils.parseEther(buyAmount);
+      const amount = await ethers.utils.parseEther(bxgvalue);
       const approvalAmount = await usdtToken.allowance(
         address,
         bitXSwap.address
       );
-      if (approvalAmount < amount) {
-        var bxgApprove = await (await usdtToken.approve(amount)).wait();
+      if (approvalAmount < bxgvalue.toString()) {
+        var bxgApprove = await (await usdtToken.approve(bitXSwap.address, amount)).wait();
       }
       if (bxgApprove.events) {
         const tx = await (await swap.swap(amount)).wait();
@@ -73,7 +72,7 @@ getSellData();
         }
       }
     } catch (error) {
-      toast.error(error, {
+      toast.error("Transaction Failed", {
         position: "top-center",
         style: { minWidth: 180 },
       });

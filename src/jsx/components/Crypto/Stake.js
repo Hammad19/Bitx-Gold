@@ -55,13 +55,14 @@ const Stake =  () => {
   const handleStake = async () => {
     try {
       // input from user
-      const amount = await ethers.utils.parseEther(amountToStake);
+      const amount = ethers.utils.parseEther(amountToStake);
       const approvalAmount = await bxg.allowance(address, bitXStake.address);
-      if (approvalAmount < amount) {
-        var bxgApprove = await (await bxg.approve(amount)).wait();
+      console.log(bxg)
+      if (approvalAmount < amountToStake.toString()) {
+        var bxgApprove = await (await bxg.approve(staking.address, amount)).wait();
       }
       if (bxgApprove.events) {
-        const tx = await (await staking.withdraw(amount)).wait();
+        const tx = await (await staking.stake(amount)).wait();
         if (tx.events) {
           toast.success(tx.blockHash, {
             position: "top-center",
@@ -76,7 +77,7 @@ const Stake =  () => {
         }
       }
     } catch (error) {
-      toast.error(error, {
+      toast.error("Transaction Failed", {
         position: "top-center",
         style: { minWidth: 180 },
       });
@@ -85,8 +86,7 @@ const Stake =  () => {
 
   const handleUnstake = async () => {
     try {
-      let stakingAmount; // input from user
-      const amount = await ethers.utils.parseEther(stakingAmount);
+      const amount = await ethers.utils.parseEther(amountToUnstakeClaim);
       const tx = await (await staking.unStake(amount)).wait();
       if (tx.events) {
         toast.success(tx.blockHash, {
@@ -101,7 +101,7 @@ const Stake =  () => {
         });
       }
     } catch (error) {
-      toast.error(error, {
+      toast.error("Transaction Faileds", {
         position: "top-center",
         style: { minWidth: 180 },
       });
@@ -110,9 +110,8 @@ const Stake =  () => {
 
   const handleClaim = async () => {
     try {
-      let stakingAmount; // input from user
-      const amount = await ethers.utils.parseEther(stakingAmount);
-      const tx = await (await staking.stake(amount)).wait();
+      const amount = await ethers.utils.parseEther(amountToUnstakeClaim);
+      const tx = await (await staking.withdraw(amount)).wait();
       if (tx.events) {
         toast.success(tx.blockHash, {
           position: "top-center",
@@ -126,7 +125,7 @@ const Stake =  () => {
         });
       }
     } catch (error) {
-      toast.error(error, {
+      toast.error("Transaction Failed", {
         position: "top-center",
         style: { minWidth: 180 },
       });
@@ -267,7 +266,9 @@ const Stake =  () => {
                               <Button
                                 //in the onclick function set start time to current time
                                 // onClick={() => setstartTime(new Date())}
-                                onClick={handleStake}
+                                onClick={() => {
+                                  handleStake();
+                                }}
                                 //to={"/exchange"}
                                 className="btn btn-success w-75"
                               >
