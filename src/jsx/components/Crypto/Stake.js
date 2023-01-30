@@ -18,13 +18,18 @@ const Stake = () => {
   const [totalAmountStaked, setTotalAmountStaked] = useState(0);
   const [totalAmountClaimed, setTotalAmountClaimed] = useState(0);
 
-  const[amountToStake,SetAmountToStake] = useState(0);
+  const [amountToStake, SetAmountToStake] = useState(0);
 
-  const [amountToClaim, setAmountToClaim] = useState(0);
+  const [amountToUnstakeClaim, SetamountToUnstakeClaim] = useState(0);
 
-  const [amountToWithdraw, setAmountToWithdraw] = useState(0);
+  //handleclaim
+  const handleClaim = () => {
+    console.log("claim");
+  };
 
-
+  const handleUnstake = () => {
+    console.log("unstake");
+  };
 
   useEffect(() => {
     const startTimeObject = new Date(startTime);
@@ -102,7 +107,7 @@ const Stake = () => {
                           className="nav-link"
                           eventKey="Navsell"
                           type="button">
-                          {timeDifference?.months > 0? "Claim": "Unstake"}
+                          {timeDifference?.months > 0 ? "Claim" : "Unstake"}
                         </Nav.Link>
                       </Nav>
                     </div>
@@ -114,7 +119,43 @@ const Stake = () => {
                             <Tab.Pane eventKey="Navbuylimit"></Tab.Pane>
                           </Tab.Content>
                           <div className="sell-element">
-                            <div className="col-xl-12"><OrderForm /></div>
+                            <div className="col-xl-12">
+                              <form className="flex-direction-row justify-content-center">
+                                <div className="sell-blance">
+                                  <br></br>
+                                  <br></br>
+                                  <br></br>
+                                  <label className="form-label text-primary">
+                                    Amount
+                                  </label>
+                                  <div className="form-label blance">
+                                    <span>Amount Already Staked:</span>
+                                    <p>$3,123.9</p>
+                                  </div>
+                                  <br></br>
+                                  <br></br>
+                                  <div className="input-group">
+                                    <input
+                                      value={amountToStake}
+                                      onChange={(e) => {
+                                        console.log(e.target.value);
+                                        SetAmountToStake(e.target.value);
+                                      }}
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="0.00"
+                                    />
+                                    <span className="input-group-text">
+                                      BXG
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <br></br>
+                                <br></br>
+                              </form>
+                            </div>
+
                             <div className="text-center">
                               <Link
                                 //in the onclick function set start time to current time
@@ -134,19 +175,52 @@ const Stake = () => {
                             <Tab.Pane id="Navselllimit"></Tab.Pane>
                           </Tab.Content>
                           <div className="sell-element">
-                            <OrderForm />
+                            <form className="flex-direction-row justify-content-center">
+                              <div className="sell-blance">
+                                <br></br>
+                                <br></br>
+                                <br></br>
+                                <label className="form-label text-primary">
+                                  Amount
+                                </label>
+                                <div className="form-label blance">
+                                  <span>Amount Already Staked:</span>
+                                  <p>$3,123.9</p>
+                                </div>
+                                <br></br>
+                                <br></br>
+                                <div className="input-group">
+                                  <input
+                                    value={amountToUnstakeClaim}
+                                    onChange={(e) => {
+                                      console.log(e.target.value);
+                                      SetamountToUnstakeClaim(e.target.value);
+                                    }}
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                  />
+                                  <span className="input-group-text">BXG</span>
+                                </div>
+                              </div>
+
+                              <br></br>
+                              <br></br>
+                            </form>
                             <div className="text-center">
                               <Link
-                                //to={"/exchange"}
+                                onClick={
+                                  timeDifference?.months > 0
+                                    ? () => handleClaim()
+                                    : () => handleUnstake()
+                                }
                                 className="btn btn-danger w-75">
-                                {timeDifference?.months > 0? "Claim": "Unstake"}
+                                {timeDifference?.months > 0
+                                  ? "Claim"
+                                  : "Unstake"}
                               </Link>
-
-							  
                             </div>
-
                           </div>
-						  
                         </Tab.Container>
                       </Tab.Pane>
                     </Tab.Content>

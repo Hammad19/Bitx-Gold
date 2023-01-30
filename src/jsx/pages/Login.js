@@ -88,7 +88,7 @@ function Login(props) {
 
   //useeffect for data to redirect it to dashboard
   useEffect(() => {
-    if (data.address !== "") {
+    if (token !== "") {
       console.log(token, "token");
       dispatch(connectToMetaMask(navigate, token));
     }
