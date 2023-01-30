@@ -92,7 +92,7 @@ function Login(props) {
       console.log(token, "token");
       dispatch(connectToMetaMask(navigate, token));
     }
-  }, [data]);
+  }, [token]);
 
   return (
     <div className="page-wraper">
