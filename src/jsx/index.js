@@ -26,8 +26,7 @@ import Future from './components/Trading/Future';
 import IntradayTrading from './components/Trading/IntradayTrading';
 
 //Crypto
-import MarketWatch from './components/Crypto/MarketWatch';
-import IcoListingFilter from './components/Crypto/IcoListingFilter';
+
 import Banking from './components/Crypto/Banking';
 import Exchange from './components/Crypto/Exchange';
 import Buy from './components/Crypto/Buy';
@@ -127,12 +126,7 @@ import FormValidation from "./components/Forms/FormValidation/FormValidation";
 //import Registration from "./pages/Registration";
 //import Login from "./pages/Login";
 //import ForgotPassword from "./pages/ForgotPassword";
-import LockScreen from "./pages/LockScreen";
-import Error400 from "./pages/Error400";
-import Error403 from "./pages/Error403";
-import Error404 from "./pages/Error404";
-import Error500 from "./pages/Error500";
-import Error503 from "./pages/Error503";
+
 import { ThemeContext } from "../context/ThemeContext";
 
 
@@ -146,16 +140,7 @@ const Markup = () => {
     { url: "dashboard", component: <Home /> },
     
     
-    //Trading
-    { url: "market", component: <Market /> },
-    { url: "ico-listing", component: <IcoListing /> },
-    { url: "p2p", component: <P2P /> },
-    { url: "future", component: <Future /> },
-    { url: "intraday-trading", component: <IntradayTrading /> },
-
     //Crypto
-    {url:"crypto", component: <MarketWatch/>},
-    {url:"ico-listing-filter", component: <IcoListingFilter/>},
     {url:"banking", component: <Banking/>},
     {url:"exchange", component: <Exchange/>},
     {url:"buy", component: <Buy/>},
@@ -270,12 +255,6 @@ const Markup = () => {
   return (
     <>
         <Routes>
-            <Route path='page-lock-screen' element= {<LockScreen />} />
-            <Route path='page-error-400' element={<Error400/>} />
-            <Route path='page-error-403' element={<Error403/>} />
-            <Route path='page-error-404' element={<Error404/>} />
-            <Route path='page-error-500' element={<Error500/>} />
-            <Route path='page-error-503' element={<Error503/>} />
             <Route  element={<MainLayout />} > 
                 {allroutes.map((data, i) => (
                   <Route

@@ -29,6 +29,8 @@ function Login (props) {
 	}
 
 	const login = async () => {
+		try
+		{
 		const provider = new ethers.providers.Web3Provider(window.ethereum);
 		const signer = provider.getSigner();
 		const signedMessage = await signer.signMessage(
@@ -47,43 +49,23 @@ function Login (props) {
 				connectToMetamask();
 			}
 		}
+	}
+	catch(err){
+		console.log(err, 'err');
+
+	}
+
 
 	  };
-	
-	const [heartActive, setHeartActive] = useState(true);
-	
+
 	const navigate = useNavigate();
-    const [email, setEmail] = useState('demo@example.com');
-    let errorsObj = { email: '', password: '' };
-    const [errors, setErrors] = useState(errorsObj);
-    const [password, setPassword] = useState('123456');
+
 	const [data, setdata] = useState({
 		address:'',    // Stores address
 		Balance: null  // Stores balance
 	  })
 
     const dispatch = useDispatch();
-
-    function onLogin(e) {
-        e.preventDefault();
-        let error = false;
-        const errorObj = { ...errorsObj };
-        if (email === '') {
-            errorObj.email = 'Email is Required';
-            error = true;
-        }
-        if (password === '') {
-            errorObj.password = 'Password is Required';
-            error = true;
-        }
-        setErrors(errorObj);
-        if (error) {
-			return ;
-		}
-		
-		dispatch(loadingToggleAction(true));
-		dispatch(loginAction(email, password, navigate));
-    }
 
 	//Create Connect to metamask function
 	const connectToMetamask = () => {

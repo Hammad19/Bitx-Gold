@@ -83,10 +83,7 @@ const Home = () => {
 						<div className="col-xl-12">
 							<BalanceCardSlider />
 						</div>
-						
-						
-						
-						
+			
 					</div>
 				</div>
 				{/* <div className="col-xl-4">

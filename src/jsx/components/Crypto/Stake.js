@@ -139,7 +139,7 @@ const Stake = () => {
                               <Link
                                 to={"/exchange"}
                                 className="btn btn-danger w-75">
-                                Claim
+                                {timeDifference.months > 0? "Claim": "Unstake"}
                               </Link>
 
 							  
