@@ -19,7 +19,7 @@ import { useState } from "react";
 const Buy = () => {
   // create a static value of 6.19931
 
-  const value = 6.19931;
+  const value = 60
   const [bxgvalue, setBxgvalue] = useState(0);
   //total usdt value
   const [totalUsd, setTotalUsd] = useState(bxgvalue * value);

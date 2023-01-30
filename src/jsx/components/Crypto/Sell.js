@@ -20,7 +20,7 @@ const Sell = () => {
   const [Usd, setUsd] = React.useState(0);
 
   // create a static value of 0.16130827463
-  const [value, setValue] = React.useState(0.16130827463);
+  const [value, setValue] = React.useState(0.166);
   const [totalbxgvalue, settotalBxgvalue] = React.useState(Usd * value);
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -46,33 +46,27 @@ const Sell = () => {
 
   const handleSell = async () => {
     try {
-      const amount = await ethers.utils.parseEther(Usd);
-      const approvalAmount = await bitXGold.allowance(
-        address,
-        bitXSwap.address
-      );
-      if (approvalAmount < Usd.toString()) {
-        const bxgApprove = await (
-          await bitXGold.approve(bitXSwap.address, amount)
-        ).wait();
-        if (bxgApprove.events) {
-          const tx = await (await swap.swapSell(amount)).wait();
-          if (tx.events) {
-            toast.success(tx.blockHash, {
-              position: "top-center",
-              style: { minWidth: 180 },
-            });
-            // call api
-          } else {
-            toast.error("Transaction Failed", {
-              position: "top-center",
-              style: { minWidth: 180 },
-            });
-          }
+      const amount = ethers.utils.parseEther(Usd);
+      const bxgApprove = await (
+        await bitXGold.approve(bitXSwap.address, amount)
+      ).wait();
+      if (bxgApprove.events) {
+        const tx = await (await swap.swapSell(amount)).wait();
+        if (tx.events) {
+          toast.success(tx.blockHash, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+          // call api
+        } else {
+          toast.error("Transaction Failed", {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
         }
       }
     } catch (error) {
-      toast.error("Transaction Failed", {
+      toast.error("Transaction Faileds", {
         position: "top-center",
         style: { minWidth: 180 },
       });

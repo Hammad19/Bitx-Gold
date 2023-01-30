@@ -16,7 +16,7 @@ import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
-const Stake =  () => {
+const Stake = () => {
   const [startTime, setstartTime] = useState("2022-01-01T00:00:00");
   const [timeDifference, setTimeDifference] = useState(null);
   const [totalAmountStaked, setTotalAmountStaked] = useState(0);
@@ -25,11 +25,11 @@ const Stake =  () => {
   const [amountToUnstakeClaim, SetamountToUnstakeClaim] = useState(0);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const [addresses,setaddresses] = useState([]);
-  
-  const [address,setAddress] = useState();
-  const [staking,setStaking] = useState(); 
-  const [bxg,setbxg] = useState(); 
+  const [addresses, setaddresses] = useState([]);
+
+  const [address, setAddress] = useState();
+  const [staking, setStaking] = useState();
+  const [bxg, setbxg] = useState();
 
   //async function
 
@@ -42,25 +42,18 @@ const Stake =  () => {
     setbxg(new ethers.Contract(bitX.address, bitX.abi, signer));
   };
 
-
-
   useEffect(() => {
     getStakingData();
   }, []);
-
-
-
 
   //handleclaim
   const handleStake = async () => {
     try {
       // input from user
       const amount = ethers.utils.parseEther(amountToStake);
-      const approvalAmount = await bxg.allowance(address, bitXStake.address);
-      console.log(bxg)
-      if (approvalAmount < amountToStake.toString()) {
-        var bxgApprove = await (await bxg.approve(staking.address, amount)).wait();
-      }
+      var bxgApprove = await (
+        await bxg.approve(staking.address, amount)
+      ).wait();
       if (bxgApprove.events) {
         const tx = await (await staking.stake(amount)).wait();
         if (tx.events) {
@@ -325,6 +318,7 @@ const Stake =  () => {
                                     : () => handleUnstake()
                                 }
                                 className="btn btn-danger w-75"
+                                disabled
                               >
                                 {timeDifference?.months > 0
                                   ? "Claim"
