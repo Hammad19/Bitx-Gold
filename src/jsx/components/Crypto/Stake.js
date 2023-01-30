@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Dropdown, Nav, Tab } from "react-bootstrap";
+import { Button, Dropdown, Nav, Tab } from "react-bootstrap";
 import Select from "react-select";
 import OrderForm from "../Dashboard/Dashboard/OrderForm";
 import ExchangeLineChart from "./Exchange/ExchangeLineChart";
@@ -16,7 +16,7 @@ import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
-const Stake = async () => {
+const Stake =  () => {
   const [startTime, setstartTime] = useState("2022-01-01T00:00:00");
   const [timeDifference, setTimeDifference] = useState(null);
   const [totalAmountStaked, setTotalAmountStaked] = useState(0);
@@ -25,16 +25,37 @@ const Stake = async () => {
   const [amountToUnstakeClaim, SetamountToUnstakeClaim] = useState(0);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const addresses = await provider.send("eth_requestAccounts", []);
-  const address = addresses[0];
-  const staking = new ethers.Contract(bitXStake.address, bitXStake.abi, signer);
-  const bxg = new ethers.Contract(bitX.address, bitX.abi, signer);
+  const [addresses,setaddresses] = useState([]);
+  
+  const [address,setAddress] = useState();
+  const [staking,setStaking] = useState(); 
+  const [bxg,setbxg] = useState(); 
+
+  //async function
+
+  const getStakingData = async () => {
+    await provider.send("eth_requestAccounts", []);
+
+    setaddresses(await provider.send("eth_requestAccounts", []));
+    setAddress(addresses[0]);
+    setStaking(new ethers.Contract(bitXStake.address, bitXStake.abi, signer));
+    setbxg(new ethers.Contract(bitX.address, bitX.abi, signer));
+  };
+
+
+
+  useEffect(() => {
+    getStakingData();
+  }, []);
+
+
+
 
   //handleclaim
   const handleStake = async () => {
     try {
-      let stakingAmount; // input from user
-      const amount = await ethers.utils.parseEther(stakingAmount);
+      // input from user
+      const amount = await ethers.utils.parseEther(amountToStake);
       const approvalAmount = await bxg.allowance(address, bitXStake.address);
       if (approvalAmount < amount) {
         var bxgApprove = await (await bxg.approve(amount)).wait();
@@ -243,7 +264,7 @@ const Stake = async () => {
                             </div>
 
                             <div className="text-center">
-                              <Link
+                              <Button
                                 //in the onclick function set start time to current time
                                 // onClick={() => setstartTime(new Date())}
                                 onClick={handleStake}
@@ -251,7 +272,7 @@ const Stake = async () => {
                                 className="btn btn-success w-75"
                               >
                                 Stake
-                              </Link>
+                              </Button>
                             </div>
                           </div>
                         </Tab.Container>

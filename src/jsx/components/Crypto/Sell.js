@@ -14,8 +14,9 @@ import bitX from "../../../contractAbis/BitX.json";
 import bitXSwap from "../../../contractAbis/BitXGoldSwap.json";
 import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
 
-const Sell = async () => {
+const Sell =  () => {
   const [Usd, setUsd] = React.useState(0);
 
   // create a static value of 0.16130827463
@@ -24,13 +25,25 @@ const Sell = async () => {
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const addresses = await provider.send("eth_requestAccounts", []);
-  const address = addresses[0];
-  const swap = new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer);
-  const bitXGold = new ethers.Contract(bitX.address, bitX.abi, signer);
+  const [addresses,setaddresses] = useState([]);
+  const [address,setaddress] = useState();
+  const [swap,setswap] = useState(); 
+  const [bitXGold,setbitXGold] = useState();
   //total usdt value
 
   //create handlesell
+
+    const getSellData = async () => {
+
+        setaddresses(await provider.send("eth_requestAccounts", []));
+        setaddress(addresses[0]);
+        setswap(new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer));
+        setbitXGold(new ethers.Contract(bitX.address, bitX.abi, signer));
+    };
+
+  useEffect(() => {
+    getSellData();
+    }, []);
 
   const handleSell = async () => {
     try {
