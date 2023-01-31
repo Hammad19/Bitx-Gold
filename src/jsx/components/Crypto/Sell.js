@@ -15,7 +15,7 @@ import bitXSwap from "../../../contractAbis/BitXGoldSwap.json";
 import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
-
+import axiosInstance from "../../../services/AxiosInstance";
 const Sell = () => {
   const [Usd, setUsd] = React.useState(0);
 
@@ -53,11 +53,36 @@ const Sell = () => {
       if (bxgApprove.events) {
         const tx = await (await swap.swapSell(amount)).wait();
         if (tx.events) {
+
+          console.log(tx.blockHash, "success");
           toast.success(tx.blockHash, {
             position: "top-center",
             style: { minWidth: 180 },
           });
-          // call api
+
+          const requestBody = {
+            wallet_address: addresses[0],
+            bxg: totalbxgvalue,
+            usdt: Usd,
+            blockhash: tx.blockHash,
+          };
+
+          const {data}  = await axiosInstance.put("/api/bxg/", requestBody).catch((err) => {
+            toast.error(err.response.data, {
+              position: "top-center",
+              style: { minWidth: 180 },
+            });
+          });
+          if(data)
+          {
+            console.log(data);
+            toast.success(data, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+
+          
         } else {
           toast.error("Transaction Failed", {
             position: "top-center",

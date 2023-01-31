@@ -15,6 +15,7 @@ import bitXSwap from "../../../contractAbis/BitXGoldSwap.json";
 import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
+import axiosInstance from "../../../services/AxiosInstance";
 
 const Buy = () => {
   // create a static value of 6.19931
@@ -33,6 +34,7 @@ const Buy = () => {
 
   const getSellData = async () => {
     setaddresses(await provider.send("eth_requestAccounts", []));
+    console.log(addresses[0], "addresses");
     setaddress(addresses[0]);
     setswap(new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer));
     setusdtToken(new ethers.Contract(usdt.address, usdt.abi, signer));
@@ -51,11 +53,38 @@ const Buy = () => {
       if (bxgApprove.events) {
         const tx = await (await swap.swap(amount)).wait();
         if (tx.events) {
+            console.log(tx.blockHash, "tx hash buy");
           toast.success(tx.blockHash, {
             position: "top-center",
             style: { minWidth: 180 },
           });
-          // call api
+
+          console.log(address, "address");
+          console.log(bxgvalue, "bxgvalue");
+          console.log(totalUsd, "totalUsd");
+
+          const requestBody = {
+            wallet_address: addresses[0],
+            bxg: bxgvalue,
+            usdt: totalUsd,
+            blockhash: tx.blockHash,
+          };
+          const {data}  = await axiosInstance.post("/api/bxg/", requestBody).catch((err) => {
+            toast.error(err.response.data, {
+              position: "top-center",
+              style: { minWidth: 180 },
+            });
+          });
+          if(data)
+          {
+            console.log(data);
+            toast.success(data, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+        
+
         } else {
           toast.error("Transaction Failed", {
             position: "top-center",

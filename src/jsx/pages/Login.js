@@ -60,7 +60,7 @@ function Login(props) {
           `Welcome to BITXGOLD  ${Date.now().toString()}`
         );
 
-        console.log(signedMessage, "signedMessage");
+        //console.log(signedMessage, "signedMessage");
         if (signedMessage) {
           const dt = {
             hash: signedMessage,
@@ -90,7 +90,7 @@ function Login(props) {
   useEffect(() => {
     if (token !== "") {
       console.log(token, "token");
-      dispatch(connectToMetaMask(navigate, token));
+      dispatch(connectToMetaMask(navigate,data.address, token));
     }
   }, [token]);
 

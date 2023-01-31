@@ -15,9 +15,12 @@ import bitXStake from "../../../contractAbis/BitXStaking.json";
 import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
+import axiosInstance from "../../../services/AxiosInstance";
 
 const Stake = () => {
-  const [startTime, setstartTime] = useState("2022-01-01T00:00:00");
+  const [startTime, setstartTime] = useState(new Date());
+                                  
+  
   const [timeDifference, setTimeDifference] = useState(null);
   const [totalAmountStaked, setTotalAmountStaked] = useState(0);
   const [totalAmountClaimed, setTotalAmountClaimed] = useState(0);
@@ -34,8 +37,8 @@ const Stake = () => {
   //async function
 
   const getStakingData = async () => {
-    await provider.send("eth_requestAccounts", []);
 
+    await provider.send("eth_requestAccounts", []);
     setaddresses(await provider.send("eth_requestAccounts", []));
     setAddress(addresses[0]);
     setStaking(new ethers.Contract(bitXStake.address, bitXStake.abi, signer));
@@ -48,7 +51,9 @@ const Stake = () => {
 
   //handleclaim
   const handleStake = async () => {
+    if(amountToStake < 20){
     try {
+      
       // input from user
       const amount = ethers.utils.parseEther(amountToStake);
       var bxgApprove = await (
@@ -57,11 +62,43 @@ const Stake = () => {
       if (bxgApprove.events) {
         const tx = await (await staking.stake(amount)).wait();
         if (tx.events) {
+          console.log(tx.blockHash,"stakesuccess");
           toast.success(tx.blockHash, {
             position: "top-center",
             style: { minWidth: 180 },
           });
-          // call api
+          const requestBody = {
+            wallet_address: addresses[0],
+            bxg: amountToStake,
+            blockhash: tx.blockHash,
+          };
+
+          console.log(requestBody);
+
+          const {data}  = await axiosInstance.post("/api/stake/", requestBody).catch((err) => {
+            toast.error(err.response.data, {
+              position: "top-center",
+              style: { minWidth: 180 },
+            });
+          });
+          if(data.stake_time)
+          {
+            console.log(data);
+            setstartTime(data.stake_time);
+            setTotalAmountStaked(data.bxg);
+            toast.success("Staked Successfully", {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+        else
+        {
+          toast.error(data.message, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+
         } else {
           toast.error("Transaction Failed", {
             position: "top-center",
@@ -69,12 +106,23 @@ const Stake = () => {
           });
         }
       }
+      
+    
     } catch (error) {
       toast.error("Transaction Failed", {
         position: "top-center",
         style: { minWidth: 180 },
       });
     }
+
+  }
+  else{
+    toast.error("You can only stake 20 BXG at a time", {
+      position: "top-center",
+      style: { minWidth: 180 },
+    });
+
+  }
   };
 
   const handleUnstake = async () => {
@@ -86,7 +134,30 @@ const Stake = () => {
           position: "top-center",
           style: { minWidth: 180 },
         });
-        // call api
+        const requestBody = {
+          wallet_address: addresses[0],
+          bxg: amountToStake,
+          blockhash: tx.blockHash,
+        };
+
+        console.log(requestBody);
+
+        const {data}  = await axiosInstance.post("/api/stake/", requestBody).catch((err) => {
+          toast.error(err.response.data, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        });
+        if(data.stake_time)
+        {
+          console.log(data);
+          //setstartTime(data.stake_time);
+          setTotalAmountStaked(data.bxg);
+          toast.success("Staked Successfully", {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
+      }
       } else {
         toast.error("Transaction Failed", {
           position: "top-center",
@@ -110,7 +181,30 @@ const Stake = () => {
           position: "top-center",
           style: { minWidth: 180 },
         });
-        // call api
+        const requestBody = {
+          wallet_address: addresses[0],
+          bxg: amountToUnstakeClaim,
+          blockhash: tx.blockHash,
+        };
+
+        console.log(requestBody);
+
+        const {data}  = await axiosInstance.put("/api/stake/", requestBody).catch((err) => {
+          toast.error(err.response.data, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        });
+        if(data.stake_time)
+        {
+          console.log(data);
+          //setstartTime(data.stake_time);
+          setTotalAmountStaked(data.bxg);
+          toast.success("Staked Successfully", {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
+      }
       } else {
         toast.error("Transaction Failed", {
           position: "top-center",
@@ -229,7 +323,7 @@ const Stake = () => {
                                   </label>
                                   <div className="form-label blance">
                                     <span>Amount Already Staked:</span>
-                                    <p>$3,123.9</p>
+                                    <p>{totalAmountStaked} BXG</p>
                                   </div>
                                   <br></br>
                                   <br></br>
@@ -240,7 +334,7 @@ const Stake = () => {
                                         console.log(e.target.value);
                                         SetAmountToStake(e.target.value);
                                       }}
-                                      type="text"
+                                         type="text"
                                       className="form-control"
                                       placeholder="0.00"
                                     />
@@ -287,8 +381,8 @@ const Stake = () => {
                                   Amount
                                 </label>
                                 <div className="form-label blance">
-                                  <span>Amount Already Staked:</span>
-                                  <p>$3,123.9</p>
+                                <span>Amount Already Staked:</span>
+                                    <p>{totalAmountStaked} BXG</p>
                                 </div>
                                 <br></br>
                                 <br></br>
