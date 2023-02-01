@@ -45,13 +45,21 @@ const Buy = () => {
   }, []);
 
   const handleBuy = async () => {
+
+    if(bxgvalue === 0){
+      toast.error("Please enter a valid amount", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }else{
+
     try {
       const amount = ethers.utils.parseEther(bxgvalue);
       const bxgApprove = await (
         await usdtToken.approve(bitXSwap.address, (amount+amount))
       ).wait();
       if (bxgApprove.events) {
-        const tx = await (await swap.swap(amount)).wait();
+        const tx = await (await swap.swapBuy(amount)).wait();
         if (tx.events) {
             console.log(tx.blockHash, "tx hash buy");
           toast.success(tx.blockHash, {
@@ -98,6 +106,7 @@ const Buy = () => {
         style: { minWidth: 180 },
       });
     }
+  }
   };
 
   const handleChange = (e) => {
@@ -138,7 +147,7 @@ const Buy = () => {
                   <div className="text-center mt-3 row justify-content-center">
                     <div className="col-xl-12 justify-content-center">
                       <div className="row justify-content-center">
-                        <div className="col-xl-6">
+                        <div className="col-6 col-xl-6 col-sm-6">
                           <input
                             onChange={handleChange}
                             type="text"
@@ -148,7 +157,7 @@ const Buy = () => {
                             value={bxgvalue}
                           />
                         </div>
-                        <div className="col-xl-2 justify-content-right">
+                        <div className="col-2 col-xl-2 col-sm-2 justify-content-right">
                           <div className="row">
                             <div
                               style={{ color: "darkgrey" }}
@@ -161,7 +170,7 @@ const Buy = () => {
                                 width="30"
                                 height="30"
                                 alt="bxg logo"
-                                className="mr-2 mx-2"
+                                className=""
                               />
                               BXG
                             </div>
@@ -172,7 +181,7 @@ const Buy = () => {
 
                     <div className="col-xl-12">
                       <div className="row justify-content-center">
-                        <div className="col-xl-6">
+                        <div className="col-6 col-xl-6 col-sm-6">
                           <input
                             disabled={true}
                             type="text"
@@ -182,7 +191,7 @@ const Buy = () => {
                             placeholder="12"
                           />
                         </div>
-                        <div className="col-xl-2">
+                        <div className="col-2 col-xl-2 col-sm-2 col-md-2">
                           <div className="row">
                             <div
                               style={{ color: "darkgrey" }}
@@ -194,7 +203,7 @@ const Buy = () => {
                                 width="25"
                                 height="25"
                                 alt="usdt logo"
-                                className="mr-2 mx-2"
+                                className=""
                               />{" "}
                               USDT
                             </div>

@@ -45,57 +45,72 @@ const Sell = () => {
   }, []);
 
   const handleSell = async () => {
-    try {
-      const amount = ethers.utils.parseEther(Usd);
-      const bxgApprove = await (
-        await bitXGold.approve(bitXSwap.address, amount)
-      ).wait();
-      if (bxgApprove.events) {
-        const tx = await (await swap.swapSell(amount)).wait();
-        if (tx.events) {
 
-          console.log(tx.blockHash, "success");
-          toast.success(tx.blockHash, {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
-
-          const requestBody = {
-            wallet_address: addresses[0],
-            bxg: totalbxgvalue,
-            usdt: Usd,
-            blockhash: tx.blockHash,
-          };
-
-          const {data}  = await axiosInstance.put("/api/bxg/", requestBody).catch((err) => {
-            toast.error(err.response.data, {
-              position: "top-center",
-              style: { minWidth: 180 },
-            });
-          });
-          if(data)
-          {
-            console.log(data);
-            toast.success(data, {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
-        }
-
-          
-        } else {
-          toast.error("Transaction Failed", {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
-        }
-      }
-    } catch (error) {
-      toast.error("Transaction Faileds", {
+    if(Usd === 0){
+      toast.error("Please enter a valid amount", {
         position: "top-center",
         style: { minWidth: 180 },
       });
-    }
+    }else{
+
+      toast.success("Request has been initiated to admin successfully", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+
+
+    // try {
+    //   const amount = ethers.utils.parseEther(Usd);
+    //   const bxgApprove = await (
+    //     await bitXGold.approve(bitXSwap.address, amount)
+    //   ).wait();
+    //   if (bxgApprove.events) {
+    //     const tx = await (await swap.swapSell(amount)).wait();
+    //     if (tx.events) {
+
+    //       console.log(tx.blockHash, "success");
+    //       toast.success(tx.blockHash, {
+    //         position: "top-center",
+    //         style: { minWidth: 180 },
+    //       });
+
+    //       const requestBody = {
+    //         wallet_address: addresses[0],
+    //         bxg: totalbxgvalue,
+    //         usdt: Usd,
+    //         blockhash: tx.blockHash,
+    //       };
+
+    //       const {data}  = await axiosInstance.put("/api/bxg/", requestBody).catch((err) => {
+    //         toast.error(err.response.data, {
+    //           position: "top-center",
+    //           style: { minWidth: 180 },
+    //         });
+    //       });
+    //       if(data)
+    //       {
+    //         console.log(data);
+    //         toast.success(data, {
+    //         position: "top-center",
+    //         style: { minWidth: 180 },
+    //       });
+    //     }
+
+          
+    //     } else {
+    //       toast.error("Transaction Failed", {
+    //         position: "top-center",
+    //         style: { minWidth: 180 },
+    //       });
+    //     }
+    //   }
+    // } catch (error) {
+    //   toast.error("Transaction Faileds", {
+    //     position: "top-center",
+    //     style: { minWidth: 180 },
+    //   });
+    // }
+  }
   };
 
   const handleChange = (e) => {
@@ -136,7 +151,7 @@ const Sell = () => {
                   <div className="text-center mt-3 row justify-content-center">
                     <div className="col-xl-12">
                       <div className="row justify-content-center">
-                        <div className="col-xl-6">
+                      <div className="col-6 col-xl-6 col-sm-6">
                           <input
                             onChange={handleChange}
                             type="text"
@@ -146,7 +161,7 @@ const Sell = () => {
                             value={Usd}
                           />
                         </div>
-                        <div className="col-xl-2">
+                        <div className="col-2 col-xl-2 col-sm-2 justify-content-right">
                           <div className="row">
                             <div
                               style={{ color: "darkgrey" }}
@@ -158,7 +173,7 @@ const Sell = () => {
                                 width="25"
                                 height="25"
                                 alt="usdt logo"
-                                className="mr-2 mx-2"
+                                className=""
                               />{" "}
                               USDT
                             </div>
@@ -169,7 +184,7 @@ const Sell = () => {
 
                     <div className="col-xl-12 justify-content-center">
                       <div className="row justify-content-center">
-                        <div className="col-xl-6">
+                      <div className="col-6 col-xl-6 col-sm-6">
                           <input
                             disabled={true}
                             type="text"
@@ -180,7 +195,7 @@ const Sell = () => {
                             defaultValue={totalbxgvalue}
                           />
                         </div>
-                        <div className="col-xl-2 justify-content-right">
+                        <div className="col-2 col-xl-2 col-sm-2 col-md-2">
                           <div className="row">
                             <div
                               style={{ color: "darkgrey" }}
@@ -193,7 +208,7 @@ const Sell = () => {
                                 width="30"
                                 height="30"
                                 alt="bxg logo"
-                                className="mr-2 mx-2"
+                                className=""
                               />
                               BXG
                             </div>

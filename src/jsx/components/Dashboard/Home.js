@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 //import {NavLink} from 'react-router-dom';
 import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
-import {Dropdown, Nav, Tab} from 'react-bootstrap';
+import {Button, Dropdown, Form, Modal, Nav, Tab} from 'react-bootstrap';
 import { Swiper, SwiperSlide,  } from "swiper/react";
 //Import Components
 import { ThemeContext } from "../../../context/ThemeContext";
@@ -19,42 +19,6 @@ import metaverse from './../../../images/metaverse.png';
 import axiosInstance from '../../../services/AxiosInstance';
 import { ethers } from "ethers";
 import { useSelector } from 'react-redux';
-
-const DashboardComboChart = loadable(() =>
-	pMinDelay(import("./Dashboard/DashboardComboChart"), 1000)
-);
-const AssetsChart = loadable(() =>
-	pMinDelay(import("./Dashboard/AssetsChart"), 1000)
-);
-
-const ServerStatusBar = loadable(() =>
-	pMinDelay(import("./Dashboard/ServerStatusBar"), 1000)
-);
-
-
-const pickerData = [
-	{fillcolor: 'var(--primary)', datatitle:'XTZ(40%)', price:'763'},
-	{fillcolor: '#2A353A', datatitle:'BTC(20%)', price:'321'},
-	{fillcolor: '#C0E192', datatitle:'BNB(10%)', price:'69'},
-	{fillcolor: '#E085E4', datatitle:'ETH(10%)', price:'154'},
-];
-
-
-const marketBlog = [
-	{icon: LtcIcon, classBg: 'bg-success', Name:'LTC', },
-	{icon: BtcIcon, classBg: 'bg-warning', Name:'BTC', },
-	{icon: XtzIcon, classBg: 'bg-primary', Name:'XTZ', },
-	{icon: EthIcon, classBg: 'bg-pink', Name:'ETH', },
-	{icon: XtzIcon, classBg: 'bg-primary', Name:'XTZ', },
-];
-
-const listData = [
-	{}, {}, {},
-	{}, {}, {},
-	{}, {},{},
-	{},{},
-];
-
 
 const Home = () => {
 
@@ -101,8 +65,40 @@ const Home = () => {
 		changeBackground({ value: "dark", label: "Dark" });
 	}, []);
 	
+	const [show, setShow] = useState(true);
+	const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
 	return(
+
+
 		<>
+
+<Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Referal Code</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Refered By Someone ? Please Enter Referral Address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="0x00000000000000000000"
+                autoFocus
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+             Get Referral Bonus
+          </Button>
+        </Modal.Footer>
+      </Modal>
 			<div className="row">
 				<div className="col-xl-12">
 					<div className="row">

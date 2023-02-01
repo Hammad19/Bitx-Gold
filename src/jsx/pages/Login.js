@@ -64,6 +64,7 @@ function Login(props) {
         if (signedMessage) {
           const dt = {
             hash: signedMessage,
+            wallet_address: address,
           };
 
           const { data } = await axiosInstance.post("/user/login/", dt);
@@ -152,22 +153,7 @@ function Login(props) {
                               </div>
                             )}
 
-<form className=" pb-3" >
-															
-															<div className="dz-separator-outer m-b5">
-																<div className="dz-separator bg-primary style-liner"></div>
-															</div>
-															<p>Please Enter Referral Address</p>
-															<div className="form-group mb-3">
-																{/* <input name="dzName" required="" className="form-control" placeholder="User Name" type="text" /> */}
-																<input type="text" className="form-control" 
-                                 />
-																
-															</div>
-															
-															
-															
-														</form>
+
 
                             <div className="text-center bottom">
                               <br></br>

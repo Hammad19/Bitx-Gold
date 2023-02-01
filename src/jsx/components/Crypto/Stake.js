@@ -16,13 +16,26 @@ import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import axiosInstance from "../../../services/AxiosInstance";
+import { useSelector } from "react-redux";
 
 const Stake = () => {
+
+  const[stakeData, setStakeData] = useState([]);
+  
+
+  const date = new Date();
+  // console.log(date);
+  const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const convertedDate = new Date(date.getTime() + (date.getTimezoneOffset() * 60 * 1000));
+  
+  const state = useSelector(state => state);
+
   const [startTime, setstartTime] = useState(new Date());
                                   
   
   const [timeDifference, setTimeDifference] = useState(null);
   const [totalAmountStaked, setTotalAmountStaked] = useState(0);
+  const [amountAlreadyStaked, setAmountAlreadyStaked] = useState(0);
   const [totalAmountClaimed, setTotalAmountClaimed] = useState(0);
   const [amountToStake, SetAmountToStake] = useState(0);
   const [amountToUnstakeClaim, SetamountToUnstakeClaim] = useState(0);
@@ -45,13 +58,73 @@ const Stake = () => {
     setbxg(new ethers.Contract(bitX.address, bitX.abi, signer));
   };
 
+
+
+
   useEffect(() => {
     getStakingData();
   }, []);
 
+
+  const FetchData = async () => {
+    const requestBody = {
+      wallet_address:state.auth.auth.walletaddress
+    };
+    //const {data} = await axiosInstance.get('/api/bxg/'+requestBody.wallet_address);
+    const data1 = await axiosInstance.get('/api/stake/'+requestBody.wallet_address);
+    const data = await axiosInstance.get('/api/stakehistory/'+requestBody.wallet_address);
+    console.log(data.data);
+
+    setStakeData(data.data.filter (item => item.type === "Staked"));
+    
+    //filter data.data and add all the bxg values and set it to totalamountclaimed
+    var amountclaimed = 0;
+    data.data.filter((item) => {
+      if(item.type === "Claimed")
+      {
+        amountclaimed = amountclaimed + item.bxg;
+      }
+    });
+
+    var amountstaked = 0;
+    data.data.filter((item) => {
+      if(item.type === "Staked")
+      {
+        amountstaked = amountstaked + item.bxg;
+      }
+    });
+
+    setTotalAmountStaked(amountstaked);
+    setTotalAmountClaimed(amountclaimed);
+    setAmountAlreadyStaked(data1.data.bxg);
+    const date = new Date(data1.data.stake_time);
+    console.log(date);
+    setstartTime(date);
+
+  }
+  useEffect(() => {
+    FetchData();
+  }, []);
+
   //handleclaim
   const handleStake = async () => {
-    if(amountToStake < 20){
+
+    if(amountToStake <= 0){
+      toast.error("Please enter amount to stake", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
+    else if(amountToStake<0)
+    {
+      toast.error("Minimum amount to stake is 20 BXG", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
+
+    else
+    {
     try {
       
       // input from user
@@ -84,7 +157,8 @@ const Stake = () => {
           if(data.stake_time)
           {
             console.log(data);
-            setstartTime(data.stake_time);
+            const date = new Date(data.stake_time);
+            setstartTime(date);
             setTotalAmountStaked(data.bxg);
             toast.success("Staked Successfully", {
             position: "top-center",
@@ -114,18 +188,23 @@ const Stake = () => {
         style: { minWidth: 180 },
       });
     }
-
+  
   }
-  else{
-    toast.error("You can only stake 20 BXG at a time", {
-      position: "top-center",
-      style: { minWidth: 180 },
-    });
 
-  }
+
+  
   };
 
   const handleUnstake = async () => {
+
+    if(amountToUnstakeClaim <= 0){
+      toast.error("Please enter amount to unstake", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
+    else{
+
     try {
       const amount = await ethers.utils.parseEther(amountToUnstakeClaim);
       const tx = await (await staking.unStake(amount)).wait();
@@ -142,7 +221,7 @@ const Stake = () => {
 
         console.log(requestBody);
 
-        const {data}  = await axiosInstance.post("/api/stake/", requestBody).catch((err) => {
+        const {data}  = await axiosInstance.put("/api/stake/", requestBody).catch((err) => {
           toast.error(err.response.data, {
             position: "top-center",
             style: { minWidth: 180 },
@@ -153,7 +232,7 @@ const Stake = () => {
           console.log(data);
           //setstartTime(data.stake_time);
           setTotalAmountStaked(data.bxg);
-          toast.success("Staked Successfully", {
+          toast.success("UnStaked Successfully", {
           position: "top-center",
           style: { minWidth: 180 },
         });
@@ -170,9 +249,20 @@ const Stake = () => {
         style: { minWidth: 180 },
       });
     }
+  }
   };
 
   const handleClaim = async () => {
+
+    if(amountToUnstakeClaim <= 0){
+      toast.error("Please Enter Emount To Claim", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
+    else{
+
+
     try {
       const amount = await ethers.utils.parseEther(amountToUnstakeClaim);
       const tx = await (await staking.withdraw(amount)).wait();
@@ -198,9 +288,9 @@ const Stake = () => {
         if(data.stake_time)
         {
           console.log(data);
-          //setstartTime(data.stake_time);
+          setstartTime(new Date());
           setTotalAmountStaked(data.bxg);
-          toast.success("Staked Successfully", {
+          toast.success("Claimed Successfully", {
           position: "top-center",
           style: { minWidth: 180 },
         });
@@ -217,14 +307,20 @@ const Stake = () => {
         style: { minWidth: 180 },
       });
     }
+
+  }
   };
 
+  
+
+
+
+
   useEffect(() => {
-    const startTimeObject = new Date(startTime);
-    const intervalId = setInterval(() => {
+      const startTimeObject = new Date(startTime);
+      const intervalId = setInterval(() => {
       const currentTime = new Date();
       const difference = currentTime - startTimeObject;
-
       const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30));
       const days = Math.floor(
         (difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)
@@ -244,10 +340,24 @@ const Stake = () => {
       });
     }, 1000);
 
+
     return () => {
       clearInterval(intervalId);
     };
   }, [startTime]);
+ 
+    
+
+    const tabDataBlog = [
+      { Name:"Tiger Nixon", Trade:"System Architect", Side:"Edinburgh", Number:"61", Date:"2022/04/25", Amount:"$320,800"},
+      { Name:"Ashton Cox", Trade:"Junior Technical Author", Side:"San Francisco", Number:"66", Date:"2022/01/12", Amount:"$86,000"},
+      { Name:"Brielle Williamson", Trade:"Integration Specialist", Side:"New York", Number:"71", Date:"2022/12/02", Amount:"$372,000"},
+      { Name:"Cedric Kelly", Trade:"Senior Developer", Side:"Edinburgh", Number:"75", Date:"2022/05/29", Amount:"$433,060"},
+      { Name:"Garrett Winters", Trade:"Accountant", Side:"Tokyo", Number:"63", Date:"2022/07/25", Amount:"$170,750"},
+      { Name:"Tiger Nixon", Trade:"System Architect", Side:"Edinburgh", Number:"36", Date:"2022/12/25", Amount:"$170,750"},
+  ];
+
+    
 
   // create a static value of 6.19931
   const [value, setValue] = React.useState(6.19931);
@@ -274,8 +384,8 @@ const Stake = () => {
           marginTop: "50px",
         }}
       >
-        <div className="col-xl-6" style={{ height: "100%" }}>
-          <div className="col-xl-12 col-sm-6">
+        <div className="col-sm-12 col-12 col-xl-6" style={{ height: "100%" }}>
+          <div className="col-xl-12 col-sm-12">
             <div className="card h-auto">
               <div className="card-body px-0 pt-1">
                 <Tab.Container defaultActiveKey="Navbuy">
@@ -323,7 +433,7 @@ const Stake = () => {
                                   </label>
                                   <div className="form-label blance">
                                     <span>Amount Already Staked:</span>
-                                    <p>{totalAmountStaked} BXG</p>
+                                    <p>{amountAlreadyStaked} BXG</p>
                                   </div>
                                   <br></br>
                                   <br></br>
@@ -371,55 +481,46 @@ const Stake = () => {
                             <Tab.Pane id="Navsellmarket"></Tab.Pane>
                             <Tab.Pane id="Navselllimit"></Tab.Pane>
                           </Tab.Content>
-                          <div className="sell-element">
-                            <form className="flex-direction-row justify-content-center">
-                              <div className="sell-blance">
-                                <br></br>
-                                <br></br>
-                                <br></br>
-                                <label className="form-label text-primary">
-                                  Amount
-                                </label>
-                                <div className="form-label blance">
-                                <span>Amount Already Staked:</span>
-                                    <p>{totalAmountStaked} BXG</p>
-                                </div>
-                                <br></br>
-                                <br></br>
-                                <div className="input-group">
-                                  <input
-                                    value={amountToUnstakeClaim}
-                                    onChange={(e) => {
-                                      console.log(e.target.value);
-                                      SetamountToUnstakeClaim(e.target.value);
-                                    }}
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="0.00"
-                                  />
-                                  <span className="input-group-text">BXG</span>
-                                </div>
-                              </div>
+                          <div className="card">
+                        <div className="card-header border-0 pb-0">
+                            <h4 className="heading mb-0">Unstake or Claim</h4>
+                        </div>
+                        <div className="card-body pt-2 pb-0">
+                            <table className="table shadow-hover orderbookTable">
+                                <thead>
+                                    <tr>
+                                        <th>Value(BXG)</th>
+                                        <th>Staked Date</th>
+                                        <th>Timer</th>
+                                        <th>Unstake or Claim</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {stakeData.map((data, index)=>(
+                                        <tr key={index}>
+                                            <td>
+                                                <span className={`${ index % 2 === 0 ? "text-success": "text-danger"}`}>{data.bxg}BXG</span>
+                                            </td>
+                                            <td>{data.stake_time}</td>
+                                            <td>10 Days 50 Minutes </td>
 
-                              <br></br>
-                              <br></br>
-                            </form>
-                            <div className="text-center">
-                              <Link
-                                onClick={
-                                  timeDifference?.months > 0
-                                    ? () => handleClaim()
-                                    : () => handleUnstake()
-                                }
-                                className="btn btn-danger w-75"
-                                disabled
-                              >
-                                {timeDifference?.months > 0
-                                  ? "Claim"
-                                  : "Unstake"}
-                              </Link>
-                            </div>
-                          </div>
+                                            <td>
+                                            <Link
+                      onClick={() => {
+                        
+                      }}
+                      className="btn btn-warning mr-0 "
+                    >
+                      Unstake
+                    </Link>
+                                            </td>
+                                        </tr>
+                                     ))   
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                         </Tab.Container>
                       </Tab.Pane>
                     </Tab.Content>
@@ -429,8 +530,9 @@ const Stake = () => {
             </div>
           </div>
         </div>
+        
 
-        <div className="col-xl-4">
+        <div className="col-sm-12 col-12 col-xl-4">
           <div className="col-xl-12" style={{ height: "100%" }}>
             <div className="card">
               <div className="card-wiget-info">
@@ -438,26 +540,26 @@ const Stake = () => {
                   <>
                     <br></br>
                     <div className="row justify-content-center">
-                      <div className="col-xl-2" style={{ fontSize: "12px" }}>
+                      <div className="col-2 col-xl-2" style={{ fontSize: "12px" }}>
                         <h4 className="count-num">{timeDifference.months}</h4>
                         <p>Months</p>
                       </div>
-                      <div className="col-xl-2" style={{ fontSize: "12px" }}>
+                      <div className="col-2 col-xl-2" style={{ fontSize: "12px" }}>
                         <h4 className="count-num">{timeDifference.days}</h4>
                         <p>Days</p>
                       </div>
 
-                      <div className="col-xl-2" style={{ fontSize: "12px" }}>
+                      <div className="col-2 col-xl-2" style={{ fontSize: "12px" }}>
                         <h4 className="count-num">{timeDifference.hours}</h4>
                         <p>Hours</p>
                       </div>
 
-                      <div className="col-xl-2" style={{ fontSize: "12px" }}>
+                      <div className="col-2 col-xl-2" style={{ fontSize: "12px" }}>
                         <h4 className="count-num">{timeDifference.minutes}</h4>
                         <p>Minutes</p>
                       </div>
 
-                      <div className="col-xl-2" style={{ fontSize: "12px" }}>
+                      <div className="col-2 col-xl-2" style={{ fontSize: "12px" }}>
                         <h4 className="count-num">{timeDifference.seconds}</h4>
                         <p>Seconds</p>
                       </div>
@@ -475,7 +577,7 @@ const Stake = () => {
               <div className="card-body pb-2">
                 <div className="card-wiget-info">
                   <br></br>
-                  <h4 className="count-num">0.00 BXG</h4>
+                  <h4 className="count-num">{totalAmountStaked} BXG</h4>
                   <p>Total Amount Staked</p>
                   <div>
                     {/* <svg className="me-1" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -490,7 +592,7 @@ const Stake = () => {
 
                 <div className="card-wiget-info">
                   <br></br>
-                  <h4 className="count-num">0.00 BXG</h4>
+                  <h4 className="count-num">{totalAmountClaimed} BXG</h4>
                   <p>Total Amount Claimed</p>
                   <div>
                     {/* <svg className="me-1" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
