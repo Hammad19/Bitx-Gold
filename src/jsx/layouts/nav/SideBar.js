@@ -243,7 +243,7 @@ const SideBar = () => {
       <PerfectScrollbar className="deznav-scroll">         
           <ul className="metismenu" id="menu">
               {state.auth.auth.isAdmin === true ? (
-                MenuList.map((data, index)=>{
+                AdminMenuList.map((data, index)=>{
                   let menuClass = data.classsChange;
                     if(menuClass === "menu-title"){
                       return(
@@ -314,7 +314,7 @@ const SideBar = () => {
                   }
                 })
               ) : (
-                AdminMenuList.map((data, index)=>{
+                MenuList.map((data, index)=>{
                   let menuClass = data.classsChange;
                     if(menuClass === "menu-title"){
                       return(
