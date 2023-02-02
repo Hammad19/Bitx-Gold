@@ -1,8 +1,8 @@
-export const MenuList = [
+export const AdminMenuList = [
 
     //DashBoard
     {   
-        title:'Dashboard',
+        title:'Admin DashBoard',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">grid_view</i>,
         to: 'dashboard',
@@ -13,7 +13,7 @@ export const MenuList = [
         title:'Buy',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">currency_bitcoin</i>,
-        to: 'buy',
+        to: 'adminbuy',
     },
 
 
@@ -22,7 +22,7 @@ export const MenuList = [
         title:'Sell',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">currency_bitcoin</i>,
-        to: 'sell',
+        to: 'adminsell',
     },
 
     //STAKE
@@ -30,7 +30,7 @@ export const MenuList = [
         title:'Stake',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">currency_bitcoin</i>,
-        to: 'stake',
+        to: 'adminstake',
     },
 
     //Affiliate Awards

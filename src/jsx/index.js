@@ -128,16 +128,20 @@ import FormValidation from "./components/Forms/FormValidation/FormValidation";
 //import ForgotPassword from "./pages/ForgotPassword";
 
 import { ThemeContext } from "../context/ThemeContext";
+import { useSelector } from "react-redux";
+import AdminHome from "./components/Dashboard/AdminHome";
 
 
 
 
 const Markup = () => {
 
+  const state = useSelector((state) => state);
   const allroutes = [
     /// Dashboard
     { url: "", component: <Home /> },
     { url: "dashboard", component: <Home /> },
+    { url: "admindashboard", component: <AdminHome /> },
     
     
     //Crypto

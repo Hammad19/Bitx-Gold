@@ -77,7 +77,7 @@ export function AuthReducer(state = initialState, action) {
     if (action.type === CONNECTED_TO_METAMASK) {
         return {
             ...state,
-            auth: {idToken: action.payload.token,walletaddress:action.payload.address},
+            auth: {idToken: action.payload.token,walletaddress:action.payload.address,adminLogin:action.payload.adminLogin},
             errorMessage: '',
             successMessage: 'Login Successfully Completed',
             showLoading: false,

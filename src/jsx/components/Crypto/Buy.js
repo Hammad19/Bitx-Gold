@@ -16,6 +16,7 @@ import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import axiosInstance from "../../../services/AxiosInstance";
+import { useSelector } from "react-redux";
 
 const Buy = () => {
   // create a static value of 6.19931

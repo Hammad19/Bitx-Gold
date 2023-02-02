@@ -53,6 +53,38 @@ const Sell = () => {
       });
     }else{
 
+          const requestBody = {
+            wallet_address: addresses[0],
+            bxg: totalbxgvalue,
+            usdt: Usd,
+            blockhash: 'blockhash',
+            
+          };
+
+            
+            const {data}  = await axiosInstance.put("/api/bxg/", requestBody).catch((err) => {
+            toast.error(err.response.data, {
+              position: "top-center",
+              style: { minWidth: 180 },
+            });
+          });
+          if(data)
+          {
+            console.log(data);
+            toast.success(data, {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+           }
+
+          
+        else {
+          toast.error("Transaction Failed", {
+            position: "top-center",
+            style: { minWidth: 180 },
+          });
+        }
+
       toast.success("Request has been initiated to admin successfully", {
         position: "top-center",
         style: { minWidth: 180 },
@@ -74,35 +106,8 @@ const Sell = () => {
     //         style: { minWidth: 180 },
     //       });
 
-    //       const requestBody = {
-    //         wallet_address: addresses[0],
-    //         bxg: totalbxgvalue,
-    //         usdt: Usd,
-    //         blockhash: tx.blockHash,
-    //       };
-
-    //       const {data}  = await axiosInstance.put("/api/bxg/", requestBody).catch((err) => {
-    //         toast.error(err.response.data, {
-    //           position: "top-center",
-    //           style: { minWidth: 180 },
-    //         });
-    //       });
-    //       if(data)
-    //       {
-    //         console.log(data);
-    //         toast.success(data, {
-    //         position: "top-center",
-    //         style: { minWidth: 180 },
-    //       });
-    //     }
-
-          
-    //     } else {
-    //       toast.error("Transaction Failed", {
-    //         position: "top-center",
-    //         style: { minWidth: 180 },
-    //       });
-    //     }
+    
+   
     //   }
     // } catch (error) {
     //   toast.error("Transaction Faileds", {
