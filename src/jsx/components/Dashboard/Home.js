@@ -19,9 +19,11 @@ import metaverse from './../../../images/metaverse.png';
 import axiosInstance from '../../../services/AxiosInstance';
 import { ethers } from "ethers";
 import { useSelector } from 'react-redux';
+import toast, { Toaster } from "react-hot-toast";
 
 const Home = () => {
 
+	const[isreferred,setisreferred] = useState(false);
 	const provider = new ethers.providers.Web3Provider(window.ethereum);
 	const [addresses, setaddresses] = useState([]);
 	const [fetch,setfetch] = useState(false);
@@ -32,16 +34,53 @@ const Home = () => {
 
 	const state = useSelector(state => state);
 
-	const FetchData = async () => {
+	const FetchData = async () => 
+	{
+	
+		try
+		{
 			const requestBody = {
 				wallet_address:state.auth.auth.walletaddress
 			};
 			const {data} = await axiosInstance.get('/api/bxg/'+requestBody.wallet_address);
 			const data1 = await axiosInstance.get('/api/stake/'+requestBody.wallet_address);
-			setbxgavailable(data.bxg);
-			setbxgstacked(data1.data.bxg);
+			const data3 = await axiosInstance.get('/api/refer/'+requestBody.wallet_address);
+			
+			console.log(data, "data");
+			console.log(data1.data, "data1");
+			console.log(data3.data, "data3");
+			
+			if(!data.wallet_address && !data1.data.wallet_address && !data3.data.wallet_address)
+			{
+
+				toast.error("Network Error Try Again Later", {
+					style: { minWidth: 180 },
+					position: "top-center",
+					});
+				
+			}
+			else
+			{
+				setbxgavailable(data.bxg);
+				setbxgstacked(data1.data.bxg);
+			//setisreferred(data3.data.isRefered);
+				if(data3.data.isRefered == false)
+				{
+					handleShow();
+				}
+			}
+
 		}
 
+		catch(err)
+		{
+			toast.error("Network Error Try Again Later", {
+				style: { minWidth: 180 },
+				position: "top-center",
+				});
+
+		}
+	}
 
 	useEffect(() => {
 		FetchData();
@@ -50,6 +89,35 @@ const Home = () => {
 
 
 
+	const [referalAddress, setreferalAddress] = useState("");
+
+	const getBonus = async () => {
+		console.log(referalAddress);
+		const requestBody = {
+			wallet_address:state.auth.auth.walletaddress,
+			refer_code:referalAddress
+		};
+		const {data} = await axiosInstance.post('/api/refer',requestBody).catch((err) => {
+			toast.error(err.response.data.message, {
+				position: "top-center",
+				}
+				);
+		});
+
+		console.log(data);
+
+		if(data === "Refered Successfully.")
+		{
+			toast.success(data);
+			setisreferred(true);
+			handleClose();
+		}
+		else
+		{
+			toast.error(data.message);
+		}
+
+	}
 		
 
 
@@ -65,14 +133,15 @@ const Home = () => {
 		changeBackground({ value: "dark", label: "Dark" });
 	}, []);
 	
-	const [show, setShow] = useState(true);
+	const [show, setShow] = useState(false);
 	const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  	const handleShow = () => setShow(true);
 
 	return(
 
 
 		<>
+		<Toaster/>	
 
 <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -82,10 +151,13 @@ const Home = () => {
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Refered By Someone ? Please Enter Referral Address</Form.Label>
-              <Form.Control
-                type="email"
+              <input
+			  	className='form-control form-control-lg mb-3'
+			  	value = {referalAddress}
+                type="text"
                 placeholder="0x00000000000000000000"
                 autoFocus
+				onChange={(e) => setreferalAddress(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -94,7 +166,7 @@ const Home = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={getBonus}>
              Get Referral Bonus
           </Button>
         </Modal.Footer>

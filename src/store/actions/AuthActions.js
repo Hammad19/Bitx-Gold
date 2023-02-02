@@ -117,7 +117,17 @@ export function connectToMetaMask(navigate,address, token) {
       localStorage.setItem("userDetails", JSON.stringify(token));
       dispatch(connectedToMetaMask(address,token));
       console.log("account");
-      navigate("/dashboard");
+
+      if(address === process.env.REACT_APP_ADMIN_ADDRESS)
+      {
+        navigate("/admindashboard");
+      }
+
+      else
+      {
+        navigate("/dashboard");
+      }
+      
     });
   };
 }
