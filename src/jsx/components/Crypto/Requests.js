@@ -107,7 +107,7 @@ const Requests = () => {
     FetchData();
   }, []);
 
-  const AcceptRequest = async (id) => {
+  const AcceptRequest = async (id,walletaddress,amnt) => {
 
     console.log("hello world");
     setLoader(true);
@@ -266,7 +266,7 @@ const Requests = () => {
                                     <td className="text-end">
                                       <Link
                                         onClick={() => {
-                                          AcceptRequest(item.id);
+                                          AcceptRequest(item.id,item.wallet_address,item.usdt);
                                         }}
                                         className="btn btn-success mr-0 btn-sm">
                                         Accept
