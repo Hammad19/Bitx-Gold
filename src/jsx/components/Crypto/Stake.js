@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import {Button, Dropdown, Form, Modal, Nav, Tab} from 'react-bootstrap';
+import { Button, Dropdown, Form, Modal, Nav, Tab } from "react-bootstrap";
 import Select from "react-select";
 import OrderForm from "../Dashboard/Dashboard/OrderForm";
 
@@ -18,14 +18,13 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { useContext } from "react";
 
 const Stake = () => {
-
-  const { changeBackground } = useContext(ThemeContext);	
-	useEffect(() => {
-		changeBackground({ value: "dark", label: "Dark" });
-	}, []);
+  const { changeBackground } = useContext(ThemeContext);
+  useEffect(() => {
+    changeBackground({ value: "dark", label: "Dark" });
+  }, []);
 
   const [stakeData, setStakeData] = useState([]);
-  const [isFetched,setIsFetched] = useState(false);
+  const [isFetched, setIsFetched] = useState(false);
   const [stakedData, setStakedData] = useState([]);
   const date = new Date();
   // console.log(date);
@@ -51,6 +50,7 @@ const Stake = () => {
   const [address, setAddress] = useState();
   const [staking, setStaking] = useState();
   const [bxg, setbxg] = useState();
+  const [stakingId, setStakingId] = useState();
 
   //async function
 
@@ -81,13 +81,11 @@ const Stake = () => {
     const data2 = await axiosInstance.get(
       "/api/refer/" + requestBody.wallet_address
     );
-    console.log(data2.data ,"data2");
+    console.log(data2.data, "data2");
 
-    if(data2.data.isRefered == false)
-				{
-					handleShow();
-          
-				}
+    if (data2.data.isRefered == false) {
+      handleShow();
+    }
     setStakeData(data.data.filter((item) => item.type === "Staked"));
 
     //filter data.data and add all the bxg values and set it to totalamountclaimed
@@ -137,6 +135,9 @@ const Stake = () => {
         ).wait();
         if (bxgApprove.events) {
           const tx = await (await staking.stake(amount)).wait();
+          const stakedId = tx.events[2].args.stakedId;
+          console.log(stakedId.toString());
+          setStakingId(stakedId.toString()); // send this id to the backend
           if (tx.events) {
             console.log(tx.blockHash, "stakesuccess");
             toast.success(tx.blockHash, {
@@ -200,7 +201,7 @@ const Stake = () => {
     } else {
       try {
         const amount = await ethers.utils.parseEther(bxgvalue.toString());
-        const tx = await (await staking.unStake(amount)).wait();
+        const tx = await (await staking.unStake(amount, stakingId)).wait(); //  replace this value
         if (tx.events) {
           toast.success(tx.blockHash, {
             position: "top-center",
@@ -256,7 +257,7 @@ const Stake = () => {
     } else {
       try {
         const amount = await ethers.utils.parseEther(bxgvalue1.toString());
-        const tx = await (await staking.withdraw(amount)).wait();
+        const tx = await (await staking.withdraw(amount, stakingId)).wait(); //  replace this value
         if (tx.events) {
           toast.success(tx.blockHash, {
             position: "top-center",
@@ -268,7 +269,7 @@ const Stake = () => {
             blockhash: tx.blockHash,
           };
 
-          console.log(requestBody , "requestBody");
+          console.log(requestBody, "requestBody");
 
           const { data } = await axiosInstance
             .put("/api/stake/", requestBody)
@@ -302,152 +303,138 @@ const Stake = () => {
     }
   };
 
-  
-	const[isreferred,setisreferred] = useState(false);
+  const [isreferred, setisreferred] = useState(false);
   const [referalAddress, setreferalAddress] = useState("");
   const [show, setShow] = useState(false);
-	const handleClose = () => setShow(false);
+  const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-	const getBonus = async () => {
-		console.log(referalAddress);
-	
-		try {
-		  const provider = new ethers.providers.Web3Provider(window.ethereum);
-		  const signer = provider.getSigner();
-		  const addresses = await provider.send("eth_requestAccounts", []);
+  const getBonus = async () => {
+    console.log(referalAddress);
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const addresses = await provider.send("eth_requestAccounts", []);
       const address = addresses[0];
-      const stake = new ethers.Contract(bitXStake.address,bitXStake.abi,signer);
+      const stake = new ethers.Contract(
+        bitXStake.address,
+        bitXStake.abi,
+        signer
+      );
 
       const requestBody = {
-			  wallet_address: address,
-			  refer_code: referalAddress,
-			};
+        wallet_address: address,
+        refer_code: referalAddress,
+      };
       console.log(requestBody);
-			const { data } = await axiosInstance.post("/api/refer/", requestBody).catch((err) => {
-				toast.error(err.response.data.message, {
-				  position: "top-center",
-				});
-			  });
-     
-      if(!data.status)
-      {
-        toast.error(data.message, {
+      const { data } = await axiosInstance
+        .post("/api/refer/", requestBody)
+        .catch((err) => {
+          toast.error(err.response.data.message, {
+            position: "top-center",
+          });
+        });
 
+      if (!data.status) {
+        toast.error(data.message, {
           position: "top-center",
         });
         return;
       }
 
-
-
       console.log(data);
-      const referalAddressarray = [data.data.refer1?data.data.refer1:"0x0000000000000000000000000000000000000000",data.data.refer2?data.data.refer2:"0x0000000000000000000000000000000000000000",data.data.refer3?data.data.refer3:"0x0000000000000000000000000000000000000000"];
-		  console.log(referalAddressarray ,"referalAddressarray");
-      
-      const tx = await (await stake.addReferral(referalAddressarray,address)).wait();
-		  if (tx.events) {
-			console.log(tx.blockHash, "success");
-			
-	
-			console.log(data);
-	
-			if (data.data.isRefered === true) {
-			  toast.success(data);
-			  setisreferred(true);
-			  handleClose();
-			} else {
-			  toast.error(data.message);
-			}
-		  }
-		} catch (error) {
-		  toast.error(error.message, {
-			position: "top-center",
-			style: { minWidth: 180 },
-		  });
-		}
-	  };
+      const referalAddressarray = [
+        data.data.refer1
+          ? data.data.refer1
+          : "0x0000000000000000000000000000000000000000",
+        data.data.refer2
+          ? data.data.refer2
+          : "0x0000000000000000000000000000000000000000",
+        data.data.refer3
+          ? data.data.refer3
+          : "0x0000000000000000000000000000000000000000",
+      ];
+      console.log(referalAddressarray, "referalAddressarray");
+
+      const tx = await (
+        await stake.addReferral([address, address, address], address)
+      ).wait();
+      if (tx.blockHash) {
+        console.log(tx.blockHash, "success");
+
+        console.log(data);
+
+        if (data.data.isRefered === true) {
+          toast.success(data);
+          setisreferred(true);
+          handleClose();
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.message, {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+    }
+  };
 
   const timer = (StartTime) => {
     const startTimeObject = new Date(StartTime);
 
-      let string1 = "";
-      const currentTime = new Date();
-      const difference = currentTime - startTimeObject;
-      const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30));
-      const days = Math.floor(
-        (difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)
-      );
-      const hours = Math.floor(
-        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    let string1 = "";
+    const currentTime = new Date();
+    const difference = currentTime - startTimeObject;
+    const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30));
+    const days = Math.floor(
+      (difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)
+    );
+    const hours = Math.floor(
+      (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      
-        
-     //console.log(`${months}m ${days}d ${hours}h ${minutes}m ${seconds}s `);
+    //console.log(`${months}m ${days}d ${hours}h ${minutes}m ${seconds}s `);
 
-     string1 = `${days}d ${hours}h ${minutes}m ${seconds}s `;
-
+    string1 = `${days}d ${hours}h ${minutes}m ${seconds}s `;
 
     return string1;
-      
-  
-  }
+  };
 
   const getType = (StartTime) => {
     const startTimeObject = new Date(StartTime);
 
-      let string1 = "";
-      const currentTime = new Date();
-      const difference = currentTime - startTimeObject;
-      const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30));
-      const days = Math.floor(
-        (difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)
-      );
-      const hours = Math.floor(
-        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    let string1 = "";
+    const currentTime = new Date();
+    const difference = currentTime - startTimeObject;
+    const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30));
+    const days = Math.floor(
+      (difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)
+    );
+    const hours = Math.floor(
+      (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-
-     if(months >=1 || days>=30)
-      {
-        string1 = "Claim";
-      }
-      else
-
-      {
-        string1 = "UnStake";
-      }
+    if (months >= 1 || days >= 30) {
+      string1 = "Claim";
+    } else {
+      string1 = "UnStake";
+    }
     return string1;
-      
-  }
-
+  };
 
   const getDate = (date) => {
     const dateObject = new Date(date);
     return dateObject.toLocaleString();
-  }
+  };
 
-  
-
-    const interval = setInterval(() => 
-    {
-      setStakedData(stakeData);
-      
-    }, 1000);
-
-  
-
-  
-
-
-
-
- 
-
+  const interval = setInterval(() => {
+    setStakedData(stakeData);
+  }, 1000);
 
   // create a static value of 6.19931
   const [value, setValue] = React.useState(6.19931);
@@ -474,14 +461,16 @@ const Stake = () => {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Refered By Someone ? Please Enter Referral Address</Form.Label>
+              <Form.Label>
+                Refered By Someone ? Please Enter Referral Address
+              </Form.Label>
               <input
-			  	className='form-control form-control-lg mb-3'
-			  	value = {referalAddress}
+                className="form-control form-control-lg mb-3"
+                value={referalAddress}
                 type="text"
                 placeholder="0x00000000000000000000"
                 autoFocus
-				onChange={(e) => setreferalAddress(e.target.value)}
+                onChange={(e) => setreferalAddress(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -491,7 +480,7 @@ const Stake = () => {
             Close
           </Button>
           <Button variant="primary" onClick={getBonus}>
-             Get Staking Referral Bonus
+            Get Staking Referral Bonus
           </Button>
         </Modal.Footer>
       </Modal>
@@ -501,7 +490,8 @@ const Stake = () => {
           justifyContent: "center",
           alignItems: "center",
           marginTop: "50px",
-        }}>
+        }}
+      >
         <div className="col-sm-12 col-12 col-xl-6" style={{ height: "100%" }}>
           <div className="col-xl-12 col-sm-12">
             <div className="card h-auto">
@@ -512,19 +502,22 @@ const Stake = () => {
                       <Nav
                         className="nav nav-tabs"
                         eventKey="nav-tab2"
-                        role="tablist">
+                        role="tablist"
+                      >
                         <Nav.Link
                           as="button"
                           className="nav-link"
                           eventKey="Navbuy"
-                          type="button">
+                          type="button"
+                        >
                           Stake
                         </Nav.Link>
                         <Nav.Link
                           as="button"
                           className="nav-link"
                           eventKey="Navsell"
-                          type="button">
+                          type="button"
+                        >
                           {timeDifference?.months > 0 ? "Claim" : "Unstake"}
                         </Nav.Link>
                       </Nav>
@@ -582,7 +575,8 @@ const Stake = () => {
                                   handleStake();
                                 }}
                                 //to={"/exchange"}
-                                className="btn btn-success w-75">
+                                className="btn btn-success w-75"
+                              >
                                 Stake
                               </Button>
                             </div>
@@ -611,7 +605,6 @@ const Stake = () => {
                                 </thead>
                                 <tbody>
                                   {stakeData.map((data, index) => (
-                                    
                                     <tr key={index}>
                                       <td>
                                         <span
@@ -619,24 +612,23 @@ const Stake = () => {
                                             getType(data.stake_time) === "Claim"
                                               ? "text-success"
                                               : "text-danger"
-                                          }`}>
+                                          }`}
+                                        >
                                           {data.bxg}BXG
                                         </span>
                                       </td>
                                       <td>{getDate(data.stake_time)}</td>
-                                      <td>{
-                                       
-                                            timer(data.stake_time)
-                                      
-                                        }</td>
+                                      <td>{timer(data.stake_time)}</td>
 
                                       <td>
                                         <Link
-                                          onClick={
-                                            () => {
-                                            getType(data.stake_time) === "Claim"? handleClaim(data.bxg): handleUnstake(data.bxg)}
-                                          }
-                                          className="btn btn-warning mr-0 ">
+                                          onClick={() => {
+                                            getType(data.stake_time) === "Claim"
+                                              ? handleClaim(data.bxg)
+                                              : handleUnstake(data.bxg);
+                                          }}
+                                          className="btn btn-warning mr-0 "
+                                        >
                                           {getType(data.stake_time)}
                                         </Link>
                                       </td>
@@ -657,7 +649,6 @@ const Stake = () => {
         </div>
 
         <div className="col-sm-12 col-12 col-xl-4">
-          
           <div className="col-xl-12" style={{ height: "100%" }}>
             <div className="card">
               <div className="card-wiget-info"></div>
