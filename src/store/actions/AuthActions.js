@@ -80,10 +80,10 @@ export function loginFailedAction(data) {
   };
 }
 
-export function loginConfirmedAction(data) {
+export function loginConfirmedAction(address,token,isAdmin) {
   return {
     type: LOGIN_CONFIRMED_ACTION,
-    payload: data,
+    payload: {address,token,isAdmin},
   };
 }
 
@@ -108,24 +108,49 @@ export function loadingToggleAction(status) {
   };
 }
 
+export function connectedToMetaMask(address,token,isAdmin) {
+  return {
+    type: CONNECTED_TO_METAMASK,
+    payload: {address,token,isAdmin},
+  };
+}
+
 //Create function for requesting to connect with MetaMask
 export function connectToMetaMask(navigate,address, token) {
   return (dispatch) => {
     window.ethereum.enable().then((accounts) => {
       console.log(token);
 
-      localStorage.setItem("userDetails", JSON.stringify(token));
       
       console.log("account");
 
-      if(address === "0x4fad12ed6776b85e56125f06742787a494a8370e")
+      if(address ==="0x4fad12ed6776b85e56125f07a494a8370e")
       {
-        dispatch(connectedToMetaMask(address,token,true));
+
+        console.log("admin");
+        let tokenDetails = {
+          token: token,
+          expiresIn: 3600,
+          walletaddress: address,
+          isAdmin : true
+        
+        }
+        saveTokenInLocalStorage(tokenDetails);
+        dispatch(connectedToMetaMask(address,token,tokenDetails.isAdmin));
         navigate("/admindashboard");
       }
 
       else
       {
+
+        let tokenDetails = {
+          token: token,
+          expiresIn: 3600,
+          walletaddress: address,
+          isAdmin : false
+        
+        }
+        saveTokenInLocalStorage(tokenDetails);
         dispatch(connectedToMetaMask(address,token,false));
         navigate("/dashboard");
       }
@@ -135,9 +160,4 @@ export function connectToMetaMask(navigate,address, token) {
 }
 
 //Create function for requesting to connect with MetaMask
-export function connectedToMetaMask(address,token,isAdmin) {
-  return {
-    type: CONNECTED_TO_METAMASK,
-    payload: {address,token,isAdmin},
-  };
-}
+

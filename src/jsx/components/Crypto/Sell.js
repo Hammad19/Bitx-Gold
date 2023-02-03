@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 import Select from "react-select";
 import { Dropdown } from "react-bootstrap";
 
-import ExchangeLineChart from "./Exchange/ExchangeLineChart";
-import ExchangeLineChart2 from "./Exchange/ExchangeLineChart2";
-import LitecoinBarChart from "./Exchange/LitecoinBarChart";
-import TicketSoldChart from "./Exchange/TicketSoldChart";
+
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";
@@ -44,24 +41,30 @@ const Sell = () => {
     getSellData();
   }, []);
 
-  const handleSell = async () => {
+  const handleSell = async () => 
+  {
 
     if(Usd === 0){
       toast.error("Please enter a valid amount", {
         position: "top-center",
         style: { minWidth: 180 },
       });
-    }else{
+    }
+    else
+    {
 
+        console.log(process.env.ADMIN_WALLET)
+        const amount = await ethers.utils.parseEther(Usd.toString()) // paste amount here
+        const tx = await(await bitXGold.transfer(addresses[0].toString(), amount)).wait() // replace address with admin wallet address
+        if(tx.events)
+        {
           const requestBody = {
             wallet_address: addresses[0],
             bxg: totalbxgvalue,
             usdt: Usd,
-            blockhash: 'blockhash',
-            
+            blockhash: tx.blockhash,   
           };
 
-            
             const {data}  = await axiosInstance.put("/api/bxg/", requestBody).catch((err) => {
             toast.error(err.response.data, {
               position: "top-center",
@@ -77,7 +80,7 @@ const Sell = () => {
           });
            }
 
-          
+        }
         else {
           toast.error("Transaction Failed", {
             position: "top-center",
@@ -90,32 +93,7 @@ const Sell = () => {
         style: { minWidth: 180 },
       });
 
-
-    // try {
-    //   const amount = ethers.utils.parseEther(Usd);
-    //   const bxgApprove = await (
-    //     await bitXGold.approve(bitXSwap.address, amount)
-    //   ).wait();
-    //   if (bxgApprove.events) {
-    //     const tx = await (await swap.swapSell(amount)).wait();
-    //     if (tx.events) {
-
-    //       console.log(tx.blockHash, "success");
-    //       toast.success(tx.blockHash, {
-    //         position: "top-center",
-    //         style: { minWidth: 180 },
-    //       });
-
-    
-   
-    //   }
-    // } catch (error) {
-    //   toast.error("Transaction Faileds", {
-    //     position: "top-center",
-    //     style: { minWidth: 180 },
-    //   });
-    // }
-  }
+    }
   };
 
   const handleChange = (e) => {

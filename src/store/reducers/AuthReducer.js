@@ -34,7 +34,7 @@ export function AuthReducer(state = initialState, action) {
     if (action.type === LOGIN_CONFIRMED_ACTION) {
         return {
             ...state,
-            auth: action.payload,
+            auth: {idToken: action.payload.token,walletaddress:action.payload.address,isAdmin:action.payload.isAdmin},
             errorMessage: '',
             successMessage: 'Login Successfully Completed',
             showLoading: false,
@@ -77,7 +77,7 @@ export function AuthReducer(state = initialState, action) {
     if (action.type === CONNECTED_TO_METAMASK) {
         return {
             ...state,
-            auth: {idToken: action.payload.token,walletaddress:action.payload.address,adminLogin:action.payload.adminLogin},
+            auth: {idToken: action.payload.token,walletaddress:action.payload.address,isAdmin:action.payload.isAdmin},
             errorMessage: '',
             successMessage: 'Login Successfully Completed',
             showLoading: false,

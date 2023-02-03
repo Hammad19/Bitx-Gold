@@ -5,15 +5,15 @@ export const AdminMenuList = [
         title:'Admin DashBoard',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">grid_view</i>,
-        to: 'dashboard',
+        to: 'admindashboard',
     },
 
     //BUY
     {   
-        title:'Buy',
+        title:'Sell Requests',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">currency_bitcoin</i>,
-        to: 'adminbuy',
+        to: 'requests',
     },
 
 

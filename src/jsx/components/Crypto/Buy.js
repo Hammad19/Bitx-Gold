@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 import Select from "react-select";
 import { Dropdown } from "react-bootstrap";
 
-import ExchangeLineChart from "./Exchange/ExchangeLineChart";
-import ExchangeLineChart2 from "./Exchange/ExchangeLineChart2";
-import LitecoinBarChart from "./Exchange/LitecoinBarChart";
-import TicketSoldChart from "./Exchange/TicketSoldChart";
+
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";

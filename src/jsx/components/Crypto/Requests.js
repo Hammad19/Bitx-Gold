@@ -7,16 +7,13 @@ import { Button, Dropdown, Form, Modal, Nav, Tab } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 //Import Components
 import { ThemeContext } from "../../../context/ThemeContext";
-import BalanceCardSlider from "./Dashboard/BalanceCardSlider";
-//import MorrisDonught from './Dashboard/MorrisDonught';
-import OrderForm from "./Dashboard/OrderForm";
+
 //import ServerStatusBar from './Dashboard/ServerStatusBar';
-import { LtcIcon, BtcIcon, XtzIcon, EthIcon } from "./SvgIcon";
+
 import OrderTab from "../Trading/Future/OrderTab";
 import TradeTab from "../Trading/Future/TradeTab";
 //images
-import coin from "./../../../images/coin.png";
-import metaverse from "./../../../images/metaverse.png";
+
 import axiosInstance from "../../../services/AxiosInstance";
 import { ethers } from "ethers";
 import { useSelector } from "react-redux";
@@ -38,7 +35,7 @@ const tableData = [
   { price: "20972.43", Size: "0.0762", total: "2.1232" },
 ];
 
-const AdminHome = () => {
+const Requests = () => {
   const [requests, setRequests] = useState([]);
   const [data, setData] = useState([]);
   const sort = 6;
@@ -76,6 +73,7 @@ const AdminHome = () => {
   useEffect(() => {
     setData(document.querySelectorAll("#future_wrapper tbody tr"));
     console.log(data.length);
+    console.log(data.length);
   }, [test]);
 
   const FetchData = async () => {
@@ -110,6 +108,7 @@ const AdminHome = () => {
   }, []);
 
   const AcceptRequest = async (id) => {
+
     console.log("hello world");
     setLoader(true);
     try {
@@ -377,4 +376,4 @@ const AdminHome = () => {
     </>
   );
 };
-export default AdminHome;
+export default Requests;

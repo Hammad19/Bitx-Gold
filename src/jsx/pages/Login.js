@@ -68,7 +68,7 @@ function Login(props) {
           };
 
           const { data } = await axiosInstance.post("/user/login/", dt);
-          console.log(data, "data[1]");
+          console.log(data, "data[1]12121");
           if (data.status) {
             setToken(data.access);
           }

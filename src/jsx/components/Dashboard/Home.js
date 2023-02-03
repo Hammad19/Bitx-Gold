@@ -20,7 +20,7 @@ import axiosInstance from '../../../services/AxiosInstance';
 import { ethers } from "ethers";
 import { useSelector } from 'react-redux';
 import toast, { Toaster } from "react-hot-toast";
-
+import bitXSwap from "../../../contractAbis/BitXGoldSwap.json";
 const Home = () => {
 
 	const[isreferred,setisreferred] = useState(false);
@@ -44,7 +44,7 @@ const Home = () => {
 			};
 			const {data} = await axiosInstance.get('/api/bxg/'+requestBody.wallet_address);
 			const data1 = await axiosInstance.get('/api/stake/'+requestBody.wallet_address);
-			const data3 = await axiosInstance.get('/api/refer/'+requestBody.wallet_address);
+			const data3 = await axiosInstance.get('/api/bonusrefer/'+requestBody.wallet_address);
 			
 			console.log(data, "data");
 			console.log(data1.data, "data1");
@@ -93,39 +93,46 @@ const Home = () => {
 
 	const getBonus = async () => {
 		console.log(referalAddress);
-		const requestBody = {
-			wallet_address:state.auth.auth.walletaddress,
-			refer_code:referalAddress
-		};
-		const {data} = await axiosInstance.post('/api/refer',requestBody).catch((err) => {
-			toast.error(err.response.data.message, {
-				position: "top-center",
-				}
-				);
-		});
-
-		console.log(data);
-
-		if(data === "Refered Successfully.")
-		{
-			toast.success(data);
-			setisreferred(true);
-			handleClose();
-		}
-		else
-		{
-			toast.error(data.message);
-		}
-
-	}
-		
-
-
 	
-
-
-
-
+		try {
+		  const provider = new ethers.providers.Web3Provider(window.ethereum);
+		  const signer = provider.getSigner();
+		  const addresses = await provider.send("eth_requestAccounts", []);
+		  const swap = new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer);
+	
+		  const tx = await (await swap.addReferral(referalAddress)).wait();
+		  if (tx.events) {
+			console.log(tx.blockHash, "success");
+			const requestBody = {
+			  wallet_address: state.auth.auth.walletaddress,
+			  refer_code: referalAddress,
+			};
+			const { data } = await axiosInstance
+			  .post("/api/bonusrefer/", requestBody)
+			  .catch((err) => {
+				toast.error(err.response.data.message, {
+				  position: "top-center",
+				});
+			  });
+	
+			console.log(data);
+	
+			if (data === "Refered Successfully.") {
+			  toast.success(data);
+			  setisreferred(true);
+			  handleClose();
+			} else {
+			  toast.error(data.message);
+			}
+		  }
+		} catch (error) {
+		  toast.error(error.message, {
+			position: "top-center",
+			style: { minWidth: 180 },
+		  });
+		}
+	  };
+		
 
 
 	const { changeBackground } = useContext(ThemeContext);	
@@ -143,7 +150,7 @@ const Home = () => {
 		<>
 		<Toaster/>	
 
-<Modal show={show} onHide={handleClose}>
+		<Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Referal Code</Modal.Title>
         </Modal.Header>

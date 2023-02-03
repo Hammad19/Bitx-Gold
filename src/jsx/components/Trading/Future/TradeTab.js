@@ -10,7 +10,7 @@ const tabDataBlog = [
     { Name:"Cedric Kelly", Trade:"Senior Developer", Side:"Edinburgh", Number:"75", Date:"2022/05/29", Amount:"$433,060"},
 ];
 
-const TradeTab = () =>{
+const TradeTab = ({rejectedData}) =>{
     const [data, setData] = useState(
 		document.querySelectorAll("#futuretrade_wrapper tbody tr")
 	);
@@ -38,7 +38,7 @@ const TradeTab = () =>{
    // Active pagginarion
     activePag.current === 0 && chageData(0, sort);
    // paggination
-    let paggination = Array(Math.ceil(data.length / sort))
+    let paggination = Array(Math.ceil(rejectedData.length / sort))
       .fill()
       .map((_, i) => i + 1);
 
@@ -55,23 +55,25 @@ const TradeTab = () =>{
                     <table id="example" className="table display dataTable no-footer" style={{minWidth:"845px"}}>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Trade</th>
-                                <th>Side</th>
-                                <th>Number</th>
-                                <th>Date</th>
-                                <th className="text-end">Amount</th>
+                            <th>ID</th>
+                <th>Wallet Address</th>
+                {/* <th>Block Hash</th> */}
+                <th>BXG </th>
+                <th>USDT</th>
+                <th>Date</th>
+                <th className="text-end">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {tabDataBlog.map((item, index)=>(
+                            {rejectedData.map((item, index)=>(
                                 <tr key={index}>
-                                    <td>{item.Name}</td>
-                                    <td>{item.Trade}</td>
-                                    <td>{item.Side}</td>
-                                    <td>{item.Number}</td>
-                                    <td>{item.Date}</td>
-                                    <td className="text-end">{item.Amount}</td>
+                                    <td>{item.id}</td>
+                  <td>{item.wallet_address}</td>
+                  {/* <td>{item.blockhash}</td> */}
+                  <td>{item.bxg}</td>
+                  <td>{item.usdt}</td>
+                  <td>{item.createdAt}</td>
+                  <td className="text-end">{item.type}</td>
                                 </tr>
                             ))}                                                        
                         </tbody>
@@ -79,10 +81,10 @@ const TradeTab = () =>{
                     <div className="d-sm-flex text-center justify-content-between align-items-center mt-3 mb-3">
                         <div className="dataTables_info">
                             Showing {activePag.current * sort + 1} to{" "}
-                            {data.length > (activePag.current + 1) * sort
+                            {rejectedData.length > (activePag.current + 1) * sort
                                 ? (activePag.current + 1) * sort
-                                : data.length}{" "}
-                            of {data.length} entries
+                                : rejectedData.length}{" "}
+                            of {rejectedData.length} entries
                         </div>
                         <div
                             className="dataTables_paginate paging_simple_numbers mb-0"
@@ -90,7 +92,7 @@ const TradeTab = () =>{
                         >
                             <Link
                                 className="paginate_button previous "
-                                to="/future"
+                                to="/admindashboard"
                                 onClick={() =>
                                     activePag.current > 0 &&
                                     onClick(activePag.current - 1)
@@ -102,7 +104,7 @@ const TradeTab = () =>{
                                 {paggination.map((number, i) => (
                                     <Link
                                         key={i}
-                                        to="/future"
+                                        to="/admindashboard"
                                         className={`paginate_button  ${
                                             activePag.current === i ? "current" : ""
                                         } `}
@@ -115,7 +117,7 @@ const TradeTab = () =>{
 
                             <Link
                                 className="paginate_button next"
-                                to="/future"
+                                to="/admindashboard"
                                 onClick={() =>
                                     activePag.current + 1 < paggination.length &&
                                     onClick(activePag.current + 1)

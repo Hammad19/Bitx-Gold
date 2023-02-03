@@ -56,6 +56,7 @@ const SideBar = () => {
 
   const state = useSelector(state => state);
 
+  
   const [statex, setStatex] = useReducer(reducer, initialState);	
 
   // let handleheartBlast = document.querySelector('.heart');
@@ -64,7 +65,7 @@ const SideBar = () => {
   // }
 
 	useEffect(() => {
-				
+    console.log(state.auth.auth, "state.auth.auth.isAdmin")
 			
 	}, []);
  //For scroll
@@ -107,125 +108,7 @@ const SideBar = () => {
   let path = window.location.pathname;
   path = path.split("/");
   path = path[path.length - 1];
-  /// Active menu
-  // let deshBoard = [
-  //     "",
-  //     "dashboard-dark",
-  //     "food-order",
-  //     "favorite-menu",
-  //     "message",
-  //     "order-history",
-  //     "notification",
-  //     "bill",
-  //     "setting",
-  //     "task",
-  //   ],
-	// restro=[
-	// 	"restaurant",
-	// 	"menu",
-	// 	"orders",
-	// 	"customer-reviews",
-	// 	"restro-setting",
-	// ],
-	// drivers=[
-	// 	"deliver-main",
-	// 	"deliver-order",
-	// 	"feedback",
-	// ],
-  //   app = [
-  //     "app-profile",
-  //     "post-details",
-  //     "app-calender",
-  //     "email-compose",
-  //     "email-inbox",
-  //     "email-read",
-  //     "ecom-product-grid",
-  //     "ecom-product-list",
-  //     "ecom-product-order",
-  //     "ecom-checkout",
-  //     "ecom-invoice",
-  //     "ecom-customers",
-  //     "post-details",
-  //     "ecom-product-detail",
-  //   ],
-  //   email = ["email-compose", "email-inbox", "email-read"],
-  //   shop = [
-  //     "ecom-product-grid",
-  //     "ecom-product-list",
-  //     "ecom-product-list",
-  //     "ecom-product-order",
-  //     "ecom-checkout",
-  //     "ecom-invoice",
-  //     "ecom-customers",
-  //     "ecom-product-detail",
-  //   ],
-  //   charts = [
-  //     "chart-rechart",
-  //     "chart-flot",
-  //     "chart-chartjs",
-  //     //"chart-chartist",
-  //     "chart-sparkline",
-  //     "chart-apexchart",
-  //   ],
-  //   bootstrap = [
-  //     "ui-accordion",
-  //     "ui-badge",
-  //     "ui-alert",
-  //     "ui-button",
-  //     "ui-modal",
-  //     "ui-button-group",
-  //     "ui-list-group",
-  //     "ui-card",
-  //     "ui-carousel",
-  //     "ui-dropdown",
-  //     "ui-popover",
-  //     "ui-progressbar",
-  //     "ui-tab",
-  //     "ui-typography",
-  //     "ui-pagination",
-  //     "ui-grid",
-  //   ],
-  //   plugins = [
-  //     "uc-select2",
-  //     "uc-nestable",
-  //     "uc-sweetalert",
-  //     "uc-toastr",
-  //     "uc-noui-slider",
-  //     "map-jqvmap",
-  //     "uc-lightgallery",
-  //   ],
-	// redux = [
-  //      "redux-form",
-	//    "redux-wizard",    
-  //      "todo",
-  //   ],
-  //   widget = ["widget-basic"],
-  //   forms = [
-  //     "form-element",
-  //     "form-wizard",
-  //     "form-ckeditor",
-  //     "form-pickers",
-  //     "form-validation-jquery",
-  //   ],
-  //   table = ["table-bootstrap-basic", "table-datatable-basic"],
-  //   pages = [
-  //     "page-register",
-  //     "page-login",
-  //     "page-lock-screen",
-  //     "page-error-400",
-  //     "page-error-403",
-  //     "page-error-404",
-  //     "page-error-500",
-  //     "page-error-503",
-  //   ],
-  //   error = [
-  //     "page-error-400",
-  //     "page-error-403",
-  //     "page-error-404",
-  //     "page-error-500",
-  //     "page-error-503",
-  //   ];
-
+  
 	
   return (
     <div

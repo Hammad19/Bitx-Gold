@@ -1,12 +1,9 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button, Dropdown, Nav, Tab } from "react-bootstrap";
+import {Button, Dropdown, Form, Modal, Nav, Tab} from 'react-bootstrap';
 import Select from "react-select";
 import OrderForm from "../Dashboard/Dashboard/OrderForm";
-import ExchangeLineChart from "./Exchange/ExchangeLineChart";
-import ExchangeLineChart2 from "./Exchange/ExchangeLineChart2";
-import LitecoinBarChart from "./Exchange/LitecoinBarChart";
-import TicketSoldChart from "./Exchange/TicketSoldChart";
+
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";
@@ -17,8 +14,15 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import axiosInstance from "../../../services/AxiosInstance";
 import { useSelector } from "react-redux";
+import { ThemeContext } from "../../../context/ThemeContext";
+import { useContext } from "react";
 
 const Stake = () => {
+
+  const { changeBackground } = useContext(ThemeContext);	
+	useEffect(() => {
+		changeBackground({ value: "dark", label: "Dark" });
+	}, []);
 
   const [stakeData, setStakeData] = useState([]);
   const [isFetched,setIsFetched] = useState(false);
@@ -33,7 +37,7 @@ const Stake = () => {
   const state = useSelector((state) => state);
 
   const [startTime, setstartTime] = useState(new Date());
-
+  const [referralBonus, setreferralBonus] = useState(0);
   const [timeDifference, setTimeDifference] = useState(null);
   const [totalAmountStaked, setTotalAmountStaked] = useState(0);
   const [amountAlreadyStaked, setAmountAlreadyStaked] = useState(0);
@@ -73,8 +77,17 @@ const Stake = () => {
     const data = await axiosInstance.get(
       "/api/stakehistory/" + requestBody.wallet_address
     );
-    console.log(data.data);
 
+    const data2 = await axiosInstance.get(
+      "/api/refer/" + requestBody.wallet_address
+    );
+    console.log(data2.data ,"data2");
+
+    if(data2.data.isRefered == false)
+				{
+					handleShow();
+          
+				}
     setStakeData(data.data.filter((item) => item.type === "Staked"));
 
     //filter data.data and add all the bxg values and set it to totalamountclaimed
@@ -289,7 +302,70 @@ const Stake = () => {
     }
   };
 
+  
+	const[isreferred,setisreferred] = useState(false);
+  const [referalAddress, setreferalAddress] = useState("");
+  const [show, setShow] = useState(false);
+	const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+	const getBonus = async () => {
+		console.log(referalAddress);
+	
+		try {
+		  const provider = new ethers.providers.Web3Provider(window.ethereum);
+		  const signer = provider.getSigner();
+		  const addresses = await provider.send("eth_requestAccounts", []);
+      const address = addresses[0];
+      const stake = new ethers.Contract(bitXStake.address,bitXStake.abi,signer);
 
+      const requestBody = {
+			  wallet_address: address,
+			  refer_code: referalAddress,
+			};
+      console.log(requestBody);
+			const { data } = await axiosInstance.post("/api/refer/", requestBody).catch((err) => {
+				toast.error(err.response.data.message, {
+				  position: "top-center",
+				});
+			  });
+     
+      if(!data.status)
+      {
+        toast.error(data.message, {
+
+          position: "top-center",
+        });
+        return;
+      }
+
+
+
+      console.log(data);
+      const referalAddressarray = [data.data.refer1?data.data.refer1:"0x0000000000000000000000000000000000000000",data.data.refer2?data.data.refer2:"0x0000000000000000000000000000000000000000",data.data.refer3?data.data.refer3:"0x0000000000000000000000000000000000000000"];
+		  console.log(referalAddressarray ,"referalAddressarray");
+      
+      const tx = await (await stake.addReferral(referalAddressarray,address)).wait();
+		  if (tx.events) {
+			console.log(tx.blockHash, "success");
+			
+	
+			console.log(data);
+	
+			if (data.data.isRefered === true) {
+			  toast.success(data);
+			  setisreferred(true);
+			  handleClose();
+			} else {
+			  toast.error(data.message);
+			}
+		  }
+		} catch (error) {
+		  toast.error(error.message, {
+			position: "top-center",
+			style: { minWidth: 180 },
+		  });
+		}
+	  };
 
   const timer = (StartTime) => {
     const startTimeObject = new Date(StartTime);
@@ -390,6 +466,35 @@ const Stake = () => {
   return (
     <>
       <Toaster />
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Staking Referal Code</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Refered By Someone ? Please Enter Referral Address</Form.Label>
+              <input
+			  	className='form-control form-control-lg mb-3'
+			  	value = {referalAddress}
+                type="text"
+                placeholder="0x00000000000000000000"
+                autoFocus
+				onChange={(e) => setreferalAddress(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={getBonus}>
+             Get Staking Referral Bonus
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div
         className="row "
         style={{

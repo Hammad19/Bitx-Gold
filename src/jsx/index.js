@@ -18,21 +18,17 @@ import ScrollToTop from "./layouts/ScrollToTop";
 import Home from "./components/Dashboard/Home";
 
 
-//Trading
-import Market from './components/Trading/Market';
-import IcoListing from './components/Trading/IcoListing';
-import P2P from './components/Trading/P2P';
-import Future from './components/Trading/Future';
-import IntradayTrading from './components/Trading/IntradayTrading';
 
 //Crypto
 
-import Banking from './components/Crypto/Banking';
-import Exchange from './components/Crypto/Exchange';
+
 import Buy from './components/Crypto/Buy';
 import Sell from './components/Crypto/Sell';
 import Stake from './components/Crypto/Stake';
-import CoinDetails from './components/Crypto/CoinDetails';
+
+
+//admin
+import Requests from "./components/Crypto/Requests";
 
 //Report 
 import History from './components/Report/History';
@@ -42,41 +38,6 @@ import User from './components/Report/User';
 import Contact from './components/Report/Contact';
 import Activity from './components/Report/Activity';
 
-/////Demo
-import Theme1 from "./components/Dashboard/Demo/Theme1";
-import Theme2 from "./components/Dashboard/Demo/Theme2";
-import Theme3 from "./components/Dashboard/Demo/Theme3";
-import Theme4 from "./components/Dashboard/Demo/Theme4";
-import Theme5 from "./components/Dashboard/Demo/Theme5";
-import Theme6 from "./components/Dashboard/Demo/Theme6";
-import Theme7 from "./components/Dashboard/Demo/Theme7";
-import Theme8 from "./components/Dashboard/Demo/Theme8";
-
-
-/// App
-import AppProfile from "./components/AppsMenu/AppProfile/AppProfile";
-import EditProfile from "./components/AppsMenu/AppProfile/EditProfile";
-import Compose from "./components/AppsMenu/Email/Compose/Compose";
-import Inbox from "./components/AppsMenu/Email/Inbox/Inbox";
-import Read from "./components/AppsMenu/Email/Read/Read";
-import Calendar from "./components/AppsMenu/Calendar/Calendar";
-import PostDetails from "./components/AppsMenu/AppProfile/PostDetails";
-
-/// Product List
-import ProductGrid from "./components/AppsMenu/Shop/ProductGrid/ProductGrid";
-import ProductList from "./components/AppsMenu/Shop/ProductList/ProductList";
-import ProductDetail from "./components/AppsMenu/Shop/ProductGrid/ProductDetail";
-import Checkout from "./components/AppsMenu/Shop/Checkout/Checkout";
-import Invoice from "./components/AppsMenu/Shop/Invoice/Invoice";
-import ProductOrder from "./components/AppsMenu/Shop/ProductOrder";
-import Customers from "./components/AppsMenu/Shop/Customers/Customers";
-
-/// Charts
-import SparklineChart from "./components/charts/Sparkline";
-import ChartJs from "./components/charts/Chartjs";
-////import Chartist from "./components/charts/chartist";
-import RechartJs from "./components/charts/rechart";
-import ApexChart from "./components/charts/apexcharts";
 
 /// Bootstrap
 import UiAlert from "./components/bootstrap/Alert";
@@ -122,6 +83,12 @@ import CkEditor from "./components/Forms/CkEditor/CkEditor";
 import Pickers from "./components/Forms/Pickers/Pickers";
 import FormValidation from "./components/Forms/FormValidation/FormValidation";
 
+
+
+
+
+
+
 /// Pages
 //import Registration from "./pages/Registration";
 //import Login from "./pages/Login";
@@ -141,16 +108,19 @@ const Markup = () => {
     /// Dashboard
     { url: "", component: <Home /> },
     { url: "dashboard", component: <Home /> },
-    { url: "admindashboard", component: <AdminHome /> },
     
     
     //Crypto
-    {url:"banking", component: <Banking/>},
-    {url:"exchange", component: <Exchange/>},
+    
     {url:"buy", component: <Buy/>},
     {url:"sell", component: <Sell/>},
     {url:"stake", component: <Stake/>},
-    {url:"coin-details", component: <CoinDetails/>},
+
+
+    //admin
+    { url: "admindashboard", component: <AdminHome /> },
+    {url:"requests", component: <Requests/>},
+    
 
 
     //Report 
@@ -161,38 +131,38 @@ const Markup = () => {
     {url :"contact", component: <Contact />},
     {url :"activity", component: <Activity />},
 	/////Demo
-    { url: "sidebar-primary", component: <Theme1 /> },
-    { url: "horizontal-sidebar", component: <Theme2 /> },
-    { url: "nav-header", component: <Theme3 /> },
-    { url: "secondary-header", component: <Theme4 /> },
-    { url: "sidebar-theme", component: <Theme5/> },
-    { url: "primary-theme", component: <Theme6/> },
-    { url: "nav-theme", component: <Theme7/> },
-    { url: "sidebar-mini", component: <Theme8 /> },
+    // { url: "sidebar-primary", component: <Theme1 /> },
+    // { url: "horizontal-sidebar", component: <Theme2 /> },
+    // { url: "nav-header", component: <Theme3 /> },
+    // { url: "secondary-header", component: <Theme4 /> },
+    // { url: "sidebar-theme", component: <Theme5/> },
+    // { url: "primary-theme", component: <Theme6/> },
+    // { url: "nav-theme", component: <Theme7/> },
+    // { url: "sidebar-mini", component: <Theme8 /> },
 	
-	/// Apps
-    { url: "app-profile", component: <AppProfile /> },
-    { url: "edit-profile", component: <EditProfile /> },
-    { url: "email-compose", component: <Compose /> },
-    { url: "email-inbox", component: <Inbox /> },
-    { url: "email-read", component: <Read /> },
-    { url: "app-calender", component: <Calendar /> },
-    { url: "post-details", component: <PostDetails /> },
+	// /// Apps
+  //   { url: "app-profile", component: <AppProfile /> },
+  //   { url: "edit-profile", component: <EditProfile /> },
+  //   { url: "email-compose", component: <Compose /> },
+  //   { url: "email-inbox", component: <Inbox /> },
+  //   { url: "email-read", component: <Read /> },
+  //   { url: "app-calender", component: <Calendar /> },
+  //   { url: "post-details", component: <PostDetails /> },
 
-  /// Shop
-    { url: "ecom-product-grid", component: <ProductGrid /> },
-    { url: "ecom-product-list", component: <ProductList /> },
-    { url: "ecom-product-detail", component: <ProductDetail /> },
-    { url: "ecom-product-order", component: <ProductOrder /> },
-    { url: "ecom-checkout", component: <Checkout /> },
-    { url: "ecom-invoice", component: <Invoice /> },
-    { url: "ecom-customers", component: <Customers /> },
+  // /// Shop
+  //   { url: "ecom-product-grid", component: <ProductGrid /> },
+  //   { url: "ecom-product-list", component: <ProductList /> },
+  //   { url: "ecom-product-detail", component: <ProductDetail /> },
+  //   { url: "ecom-product-order", component: <ProductOrder /> },
+  //   { url: "ecom-checkout", component: <Checkout /> },
+  //   { url: "ecom-invoice", component: <Invoice /> },
+  //   { url: "ecom-customers", component: <Customers /> },
 //
-    ///// Chart
-    { url: "chart-sparkline", component: <SparklineChart /> },
-    { url: "chart-chartjs", component: <ChartJs /> },    
-    { url: "chart-apexchart", component: <ApexChart /> },
-    { url: "chart-rechart", component: <RechartJs /> },
+    // ///// Chart
+    // { url: "chart-sparkline", component: <SparklineChart /> },
+    // { url: "chart-chartjs", component: <ChartJs /> },    
+    // { url: "chart-apexchart", component: <ApexChart /> },
+    // { url: "chart-rechart", component: <RechartJs /> },
 //
     ///// Bootstrap
     { url: "ui-alert", component: <UiAlert /> },
