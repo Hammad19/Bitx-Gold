@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import Select from "react-select";
 import { Dropdown } from "react-bootstrap";
 
-
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";
@@ -14,11 +13,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import axiosInstance from "../../../services/AxiosInstance";
 import { useSelector } from "react-redux";
-
+import axios from "axios";
 const Buy = () => {
   // create a static value of 6.19931
 
-  const value = 60
+  const [value, setValue] = useState();
   const [bxgvalue, setBxgvalue] = useState(0);
   //total usdt value
   const [totalUsd, setTotalUsd] = useState(bxgvalue * value);
@@ -38,73 +37,88 @@ const Buy = () => {
     setusdtToken(new ethers.Contract(usdt.address, usdt.abi, signer));
   };
 
+  const getvaluer = async () => {
+    try {
+      const { data } = await axios.get("https://www.goldapi.io/api/XAU/USD", {
+        headers: {
+          "x-access-token": "goldapi-7ygrtld4flayn-io",
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (data) {
+        setValue(data["price_gram_24k"] / 10);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
+    getvaluer();
     getSellData();
   }, []);
 
   const handleBuy = async () => {
-
-    if(bxgvalue === 0){
+    if (bxgvalue === 0) {
       toast.error("Please enter a valid amount", {
         position: "top-center",
         style: { minWidth: 180 },
       });
-    }else{
-
-    try {
-      const amount = ethers.utils.parseEther(bxgvalue);
-      const bxgApprove = await (
-        await usdtToken.approve(bitXSwap.address, (amount+amount))
-      ).wait();
-      if (bxgApprove.events) {
-        const tx = await (await swap.swapBuy(amount)).wait();
-        if (tx.events) {
+    } else {
+      try {
+        const amount = ethers.utils.parseEther(bxgvalue);
+        const bxgApprove = await (
+          await usdtToken.approve(bitXSwap.address, amount + amount)
+        ).wait();
+        if (bxgApprove.events) {
+          const tx = await (await swap.swapBuy(amount)).wait();
+          if (tx.events) {
             console.log(tx.blockHash, "tx hash buy");
-          toast.success(tx.blockHash, {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
-
-          console.log(address, "address");
-          console.log(bxgvalue, "bxgvalue");
-          console.log(totalUsd, "totalUsd");
-
-          const requestBody = {
-            wallet_address: addresses[0],
-            bxg: bxgvalue,
-            usdt: totalUsd,
-            blockhash: tx.blockHash,
-          };
-          const {data}  = await axiosInstance.post("/api/bxg/", requestBody).catch((err) => {
-            toast.error(err.response.data, {
+            toast.success(tx.blockHash, {
               position: "top-center",
               style: { minWidth: 180 },
             });
-          });
-          if(data)
-          {
-            console.log(data);
-            toast.success(data, {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
-        }
-        
 
-        } else {
-          toast.error("Transaction Failed", {
-            position: "top-center",
-            style: { minWidth: 180 },
-          });
+            console.log(address, "address");
+            console.log(bxgvalue, "bxgvalue");
+            console.log(totalUsd, "totalUsd");
+
+            const requestBody = {
+              wallet_address: addresses[0],
+              bxg: bxgvalue,
+              usdt: totalUsd,
+              blockhash: tx.blockHash,
+            };
+            const { data } = await axiosInstance
+              .post("/api/bxg/", requestBody)
+              .catch((err) => {
+                toast.error(err.response.data, {
+                  position: "top-center",
+                  style: { minWidth: 180 },
+                });
+              });
+            if (data) {
+              console.log(data);
+              toast.success(data, {
+                position: "top-center",
+                style: { minWidth: 180 },
+              });
+            }
+          } else {
+            toast.error("Transaction Failed", {
+              position: "top-center",
+              style: { minWidth: 180 },
+            });
+          }
         }
+      } catch (error) {
+        toast.error("Transaction Failed", {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
       }
-    } catch (error) {
-      toast.error("Transaction Failed", {
-        position: "top-center",
-        style: { minWidth: 180 },
-      });
     }
-  }
   };
 
   const handleChange = (e) => {
@@ -124,8 +138,7 @@ const Buy = () => {
           justifyContent: "center",
           alignItems: "center",
           marginTop: "50px",
-        }}
-      >
+        }}>
         <div className="col-xl-6" style={{ height: "100%" }}>
           <div className="card">
             <div className="card-body pb-2">
@@ -160,8 +173,7 @@ const Buy = () => {
                             <div
                               style={{ color: "darkgrey" }}
                               type="text"
-                              className="custom-react-select form-control mb-3"
-                            >
+                              className="custom-react-select form-control mb-3">
                               {" "}
                               <img
                                 src={bxgicon}
@@ -194,8 +206,7 @@ const Buy = () => {
                             <div
                               style={{ color: "darkgrey" }}
                               type="text"
-                              className="custom-react-select form-control mb-3"
-                            >
+                              className="custom-react-select form-control mb-3">
                               <img
                                 src={usdicon}
                                 width="25"

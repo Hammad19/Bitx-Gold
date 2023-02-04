@@ -7,7 +7,7 @@ import { Button, Dropdown, Form, Modal, Nav, Tab } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 //Import Components
 import { ThemeContext } from "../../../context/ThemeContext";
-
+import USDT from "../../../contractAbis/USDT.json";
 //import ServerStatusBar from './Dashboard/ServerStatusBar';
 
 import OrderTab from "../Trading/Future/OrderTab";
@@ -19,8 +19,6 @@ import { ethers } from "ethers";
 import { useSelector } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
 import { useRef } from "react";
-
-
 
 const tableData = [
   { price: "19972.43", Size: "0.0488", total: "6.8312" },
@@ -107,34 +105,51 @@ const Requests = () => {
     FetchData();
   }, []);
 
-  const AcceptRequest = async (id,walletaddress,amnt) => {
-
-    console.log("hello world");
-    setLoader(true);
+  const AcceptRequest = async (id, walletaddress, amnt) => {
     try {
+      const signer = await provider.getSigner();
+      const usdt = new ethers.Contract(USDT.address, USDT.abi, signer);
+      const amount = await ethers.utils.parseEther(amnt); // replace amount to be sent to the user
+      const tx = await (await USDT.transfer(walletaddress, amount)).wait(); // replace address with users wallet address
+
       const requestBody = {
         blockhash: "blockhash",
         type: "sell_accepted",
       };
-      const response = await axiosInstance
-        .put("/api/bxg/" + id, requestBody)
-        .catch((error) => {
-          console.log(error);
-        });
 
-      console.log(response);
-      if (response) {
-        toast.success("Request Approved");
-        setLoader(false);
-        FetchData();
+      if (tx.events) {
+        console.log(tx.events);
+        setLoader(true);
+        const {data} = await axiosInstance
+          .put("/api/bxg/" + id, requestBody)
+          .catch((error) => {
+            console.log(error);
+          });
+
+        
+        if (data) {
+          toast.success(data);
+          setLoader(false);
+          FetchData();
+        }
+      } else {
+        toast.error("Transaction Failed", {
+          style: { minWidth: 180 },
+          position: "top-center",
+        });
       }
     } catch (error) {
+
+      toast.error("Transaction Failed", {
+        style: { minWidth: 180 },
+        position: "top-center",
+      });
       console.log(error);
     }
   };
 
   const RejectRequest = async (id) => {
-    console.log("hello world");
+    //console.log("hello world");
     setLoader(true);
     try {
       const requestBody = {
@@ -149,7 +164,7 @@ const Requests = () => {
 
       console.log(response);
       if (response) {
-        toast.success("Request Approved");
+        toast.success("Request Rejected Successfully");
         setLoader(false);
         FetchData();
       }
@@ -208,7 +223,9 @@ const Requests = () => {
 
   return (
     <>
-      {
+    <Toaster />
+      
+        
         <div className="row">
           <div className="col-xl-12">
             <div className="card">
@@ -266,7 +283,11 @@ const Requests = () => {
                                     <td className="text-end">
                                       <Link
                                         onClick={() => {
-                                          AcceptRequest(item.id,item.wallet_address,item.usdt);
+                                          AcceptRequest(
+                                            item.id,
+                                            item.wallet_address,
+                                            item.usdt
+                                          );
                                         }}
                                         className="btn btn-success mr-0 btn-sm">
                                         Accept
@@ -372,7 +393,6 @@ const Requests = () => {
             </div>
           </div>
         </div>
-      }
     </>
   );
 };

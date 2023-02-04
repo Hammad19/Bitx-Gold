@@ -126,7 +126,7 @@ const Home = () => {
 			}
 		  }
 		} catch (error) {
-		  toast.error(error.message, {
+		  toast.error("Something Went Wrong", {
 			position: "top-center",
 			style: { minWidth: 180 },
 		  });

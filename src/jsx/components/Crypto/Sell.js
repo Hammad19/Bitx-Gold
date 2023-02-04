@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import { Dropdown } from "react-bootstrap";
@@ -13,12 +13,22 @@ import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import axiosInstance from "../../../services/AxiosInstance";
+import { ThemeContext } from "../../../context/ThemeContext";
+import axios from "axios";
 const Sell = () => {
+
+
+
+  const { changeBackground } = useContext(ThemeContext);	
+	useEffect(() => {
+		changeBackground({ value: "dark", label: "Dark" });
+	}, []);
+	
   const [Usd, setUsd] = React.useState(0);
 
   // create a static value of 0.16130827463
-  const [value, setValue] = React.useState(0.166);
-  const [totalbxgvalue, settotalBxgvalue] = React.useState(Usd * value);
+  const [value, setValue] = React.useState(0);
+  const [totalbxgvalue, settotalBxgvalue] = React.useState(Usd / value );
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
@@ -37,13 +47,30 @@ const Sell = () => {
     setbitXGold(new ethers.Contract(bitX.address, bitX.abi, signer));
   };
 
+  const getvaluer = async () => {
+    try {
+      const { data } = await axios.get("https://www.goldapi.io/api/XAU/USD", {
+        headers: {
+          "x-access-token": "goldapi-7ygrtld4flayn-io",
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (data) {
+        setValue(data["price_gram_24k"] / 10);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
+    getvaluer();
     getSellData();
   }, []);
 
   const handleSell = async () => 
   {
-
     if(Usd === 0){
       toast.error("Please enter a valid amount", {
         position: "top-center",
@@ -52,10 +79,10 @@ const Sell = () => {
     }
     else
     {
-
-        console.log(process.env.ADMIN_WALLET)
+      try
+      {
         const amount = await ethers.utils.parseEther(Usd.toString()) // paste amount here
-        const tx = await(await bitXGold.transfer(addresses[0].toString(), amount)).wait() // replace address with admin wallet address
+        const tx = await(await bitXGold.transfer("0x5A793d6026Df1219a3f603d98DbFee10680026e1", amount)).wait() // replace address with admin wallet address
         if(tx.events)
         {
           const requestBody = {
@@ -66,7 +93,7 @@ const Sell = () => {
           };
 
             const {data}  = await axiosInstance.put("/api/bxg/", requestBody).catch((err) => {
-            toast.error(err.response.data, {
+            toast.error(err.response.data.message, {
               position: "top-center",
               style: { minWidth: 180 },
             });
@@ -74,7 +101,7 @@ const Sell = () => {
           if(data)
           {
             console.log(data);
-            toast.success(data, {
+            toast.success("Request Sent Successfully", {
             position: "top-center",
             style: { minWidth: 180 },
           });
@@ -88,10 +115,16 @@ const Sell = () => {
           });
         }
 
-      toast.success("Request has been initiated to admin successfully", {
-        position: "top-center",
-        style: { minWidth: 180 },
-      });
+      }
+      catch(err)
+      {
+        toast.error("Transaction Failed", {
+          position: "top-center",
+          style: { minWidth: 180 },
+        });
+      }
+
+      
 
     }
   };
@@ -102,7 +135,7 @@ const Sell = () => {
   };
 
   useEffect(() => {
-    settotalBxgvalue(Usd * value);
+    settotalBxgvalue(Usd / value);
   }, [Usd]);
   return (
     <>

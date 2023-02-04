@@ -86,7 +86,7 @@ const Stake = () => {
     if (data2.data.isRefered == false) {
       handleShow();
     }
-    setStakeData(data.data.filter((item) => item.type === "Staked"));
+    setStakeData(data?.data?.filter((item) => item.type === "Staked"));
 
     //filter data.data and add all the bxg values and set it to totalamountclaimed
     var amountclaimed = 0;
@@ -148,6 +148,7 @@ const Stake = () => {
               wallet_address: addresses[0],
               bxg: amountToStake,
               blockhash: tx.blockHash,
+              stake_id: stakedId,
             };
 
             console.log(requestBody);
@@ -218,7 +219,7 @@ const Stake = () => {
           const { data } = await axiosInstance
             .put("/api/stake/", requestBody)
             .catch((err) => {
-              toast.error(err.response.data, {
+              toast.error(err.response.data.message, {
                 position: "top-center",
                 style: { minWidth: 180 },
               });
@@ -247,7 +248,7 @@ const Stake = () => {
     }
   };
 
-  const handleClaim = async (bxgvalue1) => {
+  const handleClaim = async (bxgvalue1,stakingID) => {
     console.log(bxgvalue1);
     if (bxgvalue1 <= 0) {
       toast.error("Amount less then Zero", {
@@ -256,7 +257,8 @@ const Stake = () => {
       });
     } else {
       try {
-        const amount = await ethers.utils.parseEther(bxgvalue1.toString());
+        const amount = await ethers.utils.parseEther(bxgvalue1);
+        const stakingId = await ethers.utils.parseEther(stakingID.toString());
         const tx = await (await staking.withdraw(amount, stakingId)).wait(); //  replace this value
         if (tx.events) {
           toast.success(tx.blockHash, {
@@ -342,7 +344,7 @@ const Stake = () => {
         return;
       }
 
-      console.log(data);
+      //console.log(data);
       const referalAddressarray = [
         data.data.refer1
           ? data.data.refer1
@@ -362,7 +364,7 @@ const Stake = () => {
       if (tx.blockHash) {
         console.log(tx.blockHash, "success");
 
-        console.log(data);
+        //console.log(data);
 
         if (data.data.isRefered === true) {
           toast.success(data);

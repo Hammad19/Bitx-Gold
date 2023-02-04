@@ -2,7 +2,7 @@ import axios from 'axios';
 import { store } from '../store/store';
 
 const axiosInstance = axios.create({
-    baseURL: `http://localhost:4000`,
+    baseURL: `https://odd-pear-trout.cyclic.app`,
 });
 
 axiosInstance.interceptors.request.use((config) => {
