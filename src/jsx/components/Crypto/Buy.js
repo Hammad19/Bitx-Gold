@@ -17,7 +17,7 @@ import axios from "axios";
 const Buy = () => {
   // create a static value of 6.19931
 
-  const [value, setValue] = useState();
+  const [value, setValue] = useState(0);
   const [bxgvalue, setBxgvalue] = useState(0);
   //total usdt value
   const [totalUsd, setTotalUsd] = useState(bxgvalue * value);
@@ -127,7 +127,7 @@ const Buy = () => {
   };
 
   useEffect(() => {
-    setTotalUsd(bxgvalue * value);
+    setTotalUsd(Math.round(bxgvalue * value));
   }, [bxgvalue]);
   return (
     <>

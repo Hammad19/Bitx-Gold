@@ -204,7 +204,7 @@ const Sell = () => {
                           <input
                             disabled={true}
                             type="text"
-                            value={totalbxgvalue}
+                            value={totalbxgvalue?totalbxgvalue:0}
                             className="form-control mb-3"
                             name="value"
                             placeholder=""

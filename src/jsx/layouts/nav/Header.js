@@ -132,7 +132,7 @@ const Header = ({ onNote }) => {
 							</Dropdown.Menu>
 						</Dropdown>
 					</div>
-					<div className="sidebar-social-link ">
+					{/* <div className="sidebar-social-link ">
 						<ul className="">
 							<Dropdown as="li" className="nav-item dropdown notification_dropdown ">
 								<Dropdown.Toggle variant="" as="a" className="nav-link  ai-icon i-false c-pointer" role="button">
@@ -278,14 +278,14 @@ const Header = ({ onNote }) => {
 							</Dropdown.Menu>
 						</Dropdown>
 					</ul>	
-					</div>
+					</div> */}
 					<ul>
 						<Dropdown as="li" className="nav-item dropdown header-profile">
 							<Dropdown.Toggle variant="" as="a" className="nav-link i-false c-pointer">
 								<img src={profile} width={20} alt="" />
 							</Dropdown.Toggle>
 							<Dropdown.Menu align="right" className="dropdown-menu dropdown-menu-end">
-								<Link to="/app-profile" className="dropdown-item ai-icon">
+								{/* <Link to="/app-profile" className="dropdown-item ai-icon">
 									<svg id="icon-user1" xmlns="http://www.w3.org/2000/svg" className="text-primary me-1" width={18} height={18} viewBox="0 0 24 24" fill="none"
 										stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
 									>
@@ -304,7 +304,7 @@ const Header = ({ onNote }) => {
 									<polyline points="22,6 12,13 2,6" />
 									</svg>
 									<span className="ms-2">Inbox </span>
-								</Link>
+								</Link> */}
 								<LogoutPage />
 							</Dropdown.Menu>
 						</Dropdown> 	
