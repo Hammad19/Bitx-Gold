@@ -81,7 +81,7 @@ const Sell = () => {
     {
       try
       {
-        const amount = await ethers.utils.parseEther(Usd.toString()) // paste amount here
+        const amount = await ethers.utils.parseEther(totalbxgvalue.toString()) // paste amount heres
         const tx = await(await bitXGold.transfer("0x5A793d6026Df1219a3f603d98DbFee10680026e1", amount)).wait() // replace address with admin wallet address
         if(tx.events)
         {
