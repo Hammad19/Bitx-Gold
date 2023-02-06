@@ -67,6 +67,8 @@ const StakingReferral = () => {
 
   const FetchData = async () => {
 
+    setLoader(true);
+
    
     try
     {
@@ -120,6 +122,7 @@ const StakingReferral = () => {
       });
 
     }
+    setLoader(false);
   };
 
 
@@ -143,6 +146,9 @@ const StakingReferral = () => {
   return (
     <>
       <Toaster />
+      {loader ? (
+        <Toaster/>
+      ) : (
       <div
         className="row "
         style={{
@@ -260,7 +266,7 @@ const StakingReferral = () => {
             </Card.Body>
           </Card>
         </Col>
-      </div>
+      </div>)}
     </>
   );
 };

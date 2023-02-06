@@ -75,7 +75,8 @@ const BonusReferral = () => {
           });
         });
 
-      if (isreferedData.data.isrefered) {
+        
+      if (isreferedData.data.isRefered) {
         setReferCode(isreferedData.data.refer_code);
       } else {
       }
@@ -233,7 +234,7 @@ const BonusReferral = () => {
                       <td>{data.wallet_address}</td>
 
                       <td>{getFormattedDate(data.createdAt)}</td>
-                      <td className="color-success">{data.reward} BXG</td>
+                      <td className="color-success">{data.reward} USDT</td>
                     </tr>
                   ))}
 

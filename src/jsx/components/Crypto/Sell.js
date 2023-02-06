@@ -55,7 +55,7 @@ const Sell = () => {
     try {
       const { data } = await axios.get("https://www.goldapi.io/api/XAU/USD", {
         headers: {
-          "x-access-token": "goldapi-7ygrtld4flayn-io",
+          "x-access-token": "goldapi-1d2k4ptlcp73pb2-io",
           "Content-Type": "application/json",
         },
       });

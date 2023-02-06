@@ -373,14 +373,14 @@ const Stake = () => {
       
 
       const tx = await (
-        await stake.addReferral([address, address, address], address)
+        await stake.addReferral(referalAddressarray, address)
       ).wait();
       if (tx.blockHash) {
        
 
      
         if (data.data.isRefered === true) {
-          toast.success(data);
+          toast.success("Refered Successfully");
           setisreferred(true);
           handleClose();
         } else {
@@ -447,8 +447,11 @@ const Stake = () => {
   };
 
   const interval = setInterval(() => {
+
     setStakedData(stakeData);
+    
   }, 1000);
+
 
   // create a static value of 6.19931
   const [value, setValue] = React.useState(6.19931);
