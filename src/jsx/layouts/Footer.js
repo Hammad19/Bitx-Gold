@@ -5,11 +5,8 @@ const Footer = () => {
 	return (
 		<div className="footer out-footer">
 			<div className="copyright">
-				<p>Copyright © Designed &amp; Developed by{" "}
-					<a href="http://dexignzone.com/" target="_blank"  rel="noreferrer">
-						DexignZone
-					</a>{" "}
-					{d.getFullYear()}
+				<p>Copyright © BitxGold
+					{" " +d.getFullYear()}
 				</p>
 			</div>
 		</div>
