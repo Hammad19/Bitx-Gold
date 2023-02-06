@@ -15,17 +15,19 @@ import { useState } from "react";
 import axiosInstance from "../../../services/AxiosInstance";
 import { ThemeContext } from "../../../context/ThemeContext";
 import axios from "axios";
+import Loader from "../Loader/Loader";
 const Sell = () => {
 
 
 
   const { changeBackground } = useContext(ThemeContext);	
 	useEffect(() => {
-		changeBackground({ value: "dark", label: "Dark" });
+		
 	}, []);
 	
   const [Usd, setUsd] = React.useState(0);
 
+  const [loader,setLoader] = useState(false);
   // create a static value of 0.16130827463
   const [value, setValue] = React.useState(0);
   const [totalbxgvalue, settotalBxgvalue] = React.useState(Usd / value );
@@ -38,7 +40,7 @@ const Sell = () => {
   const [bitXGold, setbitXGold] = useState();
   //total usdt value
 
-  //create handlesell
+
 
   const getSellData = async () => {
     setaddresses(await provider.send("eth_requestAccounts", []));
@@ -48,6 +50,8 @@ const Sell = () => {
   };
 
   const getvaluer = async () => {
+
+    setLoader(true);
     try {
       const { data } = await axios.get("https://www.goldapi.io/api/XAU/USD", {
         headers: {
@@ -62,15 +66,18 @@ const Sell = () => {
     } catch (err) {
       console.log(err);
     }
+    setLoader(false);
   };
 
   useEffect(() => {
+    changeBackground({ value: "dark", label: "Dark" });
     getvaluer();
     getSellData();
   }, []);
 
   const handleSell = async () => 
   {
+    setLoader(true);
     if(Usd === 0){
       toast.error("Please enter a valid amount", {
         position: "top-center",
@@ -100,7 +107,7 @@ const Sell = () => {
           });
           if(data)
           {
-            console.log(data);
+          
             toast.success("Request Sent Successfully", {
             position: "top-center",
             style: { minWidth: 180 },
@@ -127,11 +134,12 @@ const Sell = () => {
       
 
     }
+    setLoader(false);
   };
 
   const handleChange = (e) => {
     setUsd(e.target.value);
-    console.log(e.target.value);
+ 
   };
 
   useEffect(() => {
@@ -140,6 +148,10 @@ const Sell = () => {
   return (
     <>
       <Toaster />
+
+      {loader ? (
+        <Loader/>
+      ) : (
       <div
         className="row "
         style={{
@@ -208,7 +220,7 @@ const Sell = () => {
                             className="form-control mb-3"
                             name="value"
                             placeholder=""
-                            defaultValue={totalbxgvalue}
+                            
                           />
                         </div>
                         <div className="col-2 col-xl-2 col-sm-2 col-md-2">
@@ -252,6 +264,7 @@ const Sell = () => {
           </div>
         </div>
       </div>
+      )}
     </>
   );
 };

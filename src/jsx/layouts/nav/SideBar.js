@@ -64,10 +64,7 @@ const SideBar = () => {
   //   return handleheartBlast.classList.toggle("heart-blast");
   // }
 
-	useEffect(() => {
-    console.log(state.auth.auth, "state.auth.auth.isAdmin")
-			
-	}, []);
+	
  //For scroll
  	const [hideOnScroll, setHideOnScroll] = useState(true)
 	useScrollPosition(

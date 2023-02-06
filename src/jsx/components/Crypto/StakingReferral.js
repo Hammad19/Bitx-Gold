@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import Select from "react-select";
 import { Badge, Card, Col, Dropdown, Row, Table } from "react-bootstrap";
 
-
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";
 import usdicon from "../../../icons/buy and sell/usdtt.png";
@@ -17,23 +16,23 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import axios from "axios";
 import { useSelector } from "react-redux";
 const StakingReferral = () => {
-
-
-
   const state = useSelector((state) => state);
 
+  const { changeBackground } = useContext(ThemeContext);
+  useEffect(() => {
+    changeBackground({ value: "dark", label: "Dark" });
+  }, []);
 
-  const { changeBackground } = useContext(ThemeContext);	
-	useEffect(() => {
-		changeBackground({ value: "dark", label: "Dark" });
-	}, []);
-	
-  const [Usd, setUsd] = React.useState(0);
-
+  
   // create a static value of 0.16130827463
-  const [value, setValue] = React.useState(0);
-  const [totalbxgvalue, settotalBxgvalue] = React.useState(Usd / value );
+ 
 
+
+  const [loader, setLoader] = useState(false);
+  const [stakingReferalData, setStakingReferalData] = useState([]);
+  const [level1count, setLevel1Count] = useState(0);
+  const [level2count, setLevel2Count] = useState(0);
+  const [level3count, setLevel3Count] = useState(0);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const [addresses, setaddresses] = useState([]);
@@ -44,6 +43,15 @@ const StakingReferral = () => {
 
   //create handlesell
 
+  const getFormattedDate = (date) => {
+    //get only day and month in english
+    const d = new Date(date);
+    const month = d.toLocaleString("default", { month: "short" });
+    const day = d.getDate();
+    return `${day} ${month}`;
+  };
+
+
   const getSellData = async () => {
     setaddresses(await provider.send("eth_requestAccounts", []));
     setaddress(addresses[0]);
@@ -51,34 +59,87 @@ const StakingReferral = () => {
     setbitXGold(new ethers.Contract(bitX.address, bitX.abi, signer));
   };
 
-
-
   useEffect(() => {
     getSellData();
+    FetchData();
   }, []);
+
+
+  const FetchData = async () => {
+
+   
+    try
+    {
+    const response = await axiosInstance.get("/api/refer/getall").catch((err) => {
+      console.log("Error", err);
+
+    });
+
+    
+
+
+    const {data} = await axiosInstance.get("/api/stakerefreward/"+state.auth.auth.walletaddress).catch((err) => {
+      console.log("Error", err);
+    });
+
+    if(data)
+    {
+      setStakingReferalData(data);
+      
+    }
+
+
+    //match the address with the refer1 and refer2 and refer3 and count the number of matches and set the count to the state of level1count, level2count and level3count
+    if(response.data.length > 0)
+    {
+      var level1 = 0;
+      var level2 = 0;
+      var level3 = 0;
+    response.data.map((item) => {
+      if (item.refer1 == state.auth.auth.walletaddress) {
+        level1 = level1 + 1;
+      }
+      if (item.refer2 == state.auth.auth.walletaddress) {
+        level2 = level2 + 1;
+      }
+      if (item.refer3 == state.auth.auth.walletaddress) {
+        level3 = level3 + 1;
+      }
+    });
+
+    setLevel1Count(level1);
+    setLevel2Count(level2);
+    setLevel3Count(level3);
+  }
+    }
+    catch(err)
+    {
+      toast.error("Error Fetching Data", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
+
+    }
+  };
 
 
   function myFunction() {
     // Get the text field
     var copyText = document.getElementById("myInput");
-  
+
     // Select the text field
     copyText.select();
     copyText.setSelectionRange(0, 99999); // For mobile devices
-  
-     // Copy the text inside the text field
+
+    // Copy the text inside the text field
     navigator.clipboard.writeText(copyText.value);
-  
+
     // Alert the copied text
     toast.success("Copied Referral Code: " + copyText.value, {
       position: "top-center",
       style: { minWidth: 180 },
     });
   }
-
-  useEffect(() => {
-    settotalBxgvalue(Usd / value);
-  }, [Usd]);
   return (
     <>
       <Toaster />
@@ -88,8 +149,7 @@ const StakingReferral = () => {
           justifyContent: "center",
           alignItems: "center",
           marginTop: "50px",
-        }}
-      >
+        }}>
         <div className="col-xl-12" style={{ height: "100%" }}>
           <div className="card">
             <div className="card-body pb-2">
@@ -97,36 +157,44 @@ const StakingReferral = () => {
               <h1 className="no-border font-w600 fs-60 mt-2">
                 Invite Your Contacts
               </h1>
-              <p className="font-w600 fs-60 mt-2" >Share this with Your Contacts and Get Referral Bonus when you Stake. Note that Refer Code can Only be Redeemed Once</p>
+              <p className="font-w600 fs-60 mt-2">
+                Share this with Your Contacts and Get Referral Bonus when you
+                Stake. Note that Refer Code can Only be Redeemed Once
+              </p>
               <br></br>
-              
+
               <div className="row">
                 <div className="col-xl-12">
                   <div className=" mt-3 row ">
                     <div className="col-xl-10">
                       <div className="row">
-                      <label>Your Referral Code</label>
-                      <div class="input-group mb-3">
-                       
-                        <input id="myInput" disabled={true} value={state.auth.auth.walletaddress} style={{height: 60}} type="text" className="form-control"/><button onClick={myFunction} className="btn btn-success" type="button">Copy Code</button></div>
-                       
+                        <label>Your Referral Code</label>
+                        <div className="input-group mb-3">
+                          <input
+                            id="myInput"
+                            disabled={true}
+                            value={state.auth.auth.walletaddress}
+                            style={{ height: 60 }}
+                            type="text"
+                            className="form-control"
+                          />
+                          <button
+                            onClick={myFunction}
+                            className="btn btn-success"
+                            type="button">
+                            Copy Code
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                
                   </div>
 
                   <br></br>
-
-                  
                 </div>
-
-
               </div>
             </div>
           </div>
         </div>
-
 
         <Col lg={12}>
           <Card>
@@ -134,69 +202,28 @@ const StakingReferral = () => {
               <Card.Title>Refers By Level</Card.Title>
             </Card.Header>
             <Card.Body>
-            <Row className="text-center" lg={4}>
+              <Row className="text-center" lg={4}>
                 <Col lg={4}>
-                <Card.Title>Level 1</Card.Title>
+                  <Card.Title>Level 1</Card.Title>
                 </Col>
                 <Col lg={4}>
-                <Card.Title>Level 2</Card.Title>
+                  <Card.Title>Level 2</Card.Title>
                 </Col>
                 <Col lg={4}>
-                <Card.Title>Level 3</Card.Title>
+                  <Card.Title>Level 3</Card.Title>
                 </Col>
-            </Row>
+              </Row>
 
-            <Row className="text-center " lg={4}>
-                <Col lg={4}>
-                  70
-                </Col>
-                <Col lg={4}>
-                  50
-                </Col>
-                <Col lg={4}>
-                  20
-                </Col>
-            </Row>
-
-             
+              <Row className="text-center " lg={4}>
+                <Col lg={4}>{level1count}</Col>
+                <Col lg={4}>{level2count}</Col>
+                <Col lg={4}>{level3count}</Col>
+              </Row>
             </Card.Body>
           </Card>
         </Col>
 
-        <Col lg={12}>
-          <Card>
-            <Card.Header>
-              <Card.Title>You are Currently Referred By</Card.Title>
-            </Card.Header>
-            <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Your Wallet</th>
-                    <th>Referred Wallet</th>
-                    <th>Level</th>
-            
-                  </tr>
-                </thead>
-                <tbody>
-
-                  {/* {idhr map lgega} */}
-                  
-            
-                  <tr>
-                    <th>1</th>
-                    <td>0xEAC3ce292F95d779732e7a26c95c57A742cf5119</td>
-                    <td>0xEAC3ce292F95d779732e7a26c95c57A742cf5119</td>
-                    <td>Level 2</td>
-                  
-                  </tr>
-                </tbody>
-              </Table>
-            </Card.Body>
-          </Card>
-        </Col>
-
+       
 
         <Col lg={12}>
           <Card>
@@ -209,43 +236,25 @@ const StakingReferral = () => {
                   <tr>
                     <th>#</th>
                     <th>Wallet Address</th>
-                    <th>Status</th>
+                    <th>Level</th>
                     <th>Date</th>
                     <th>BXG</th>
                   </tr>
                 </thead>
                 <tbody>
 
-                  {/* {idhr map lgega} */}
-                  <tr>
-                    <th>1</th>
-                    <td>0x4fad12ed6776b85e56125f06742787a494a8370e</td>
-                    <td>
-                      <Badge bg="" className="badge-primary light">Sale</Badge>
-                    </td>
-                    <td>January 22</td>
-                    <td className="color-primary">21.56 BXG</td>
-                  </tr>
-                  <tr>
-                    <th>2</th>
-                    <td>0x4fad12ed6776b85e56125f06742787a494a8370e</td>
-                    <td>
-                      <Badge bg="success">Tax</Badge>
-                    </td>
-                    <td>January 30</td>
-                    <td className="color-success">55.32 BXG</td>
-                  </tr>
-                  <tr>
-                    <th>3</th>
-                    <td>0x4fad12ed6776b85e56125f06742787a494a8370e</td>
-                    <td>
-                      <Badge bg="danger">Extended</Badge>
+                  {stakingReferalData.map((item, index) => {
+                    return (
+                      <tr>
+                        <th>{index + 1}</th>
+                        <td>{item.wallet_address}</td>
+                        <td>  <Badge bg="" className={"badge-success success"}>Level {item.level}</Badge> </td>
+                        <td>{getFormattedDate(item.createdAt)}</td>
+                        <td className="color-primary">{item.reward} BXG</td>
+                      </tr>
+                    );
+                  })}
 
-                      
-                    </td>
-                    <td>January 25</td>
-                    <td className="color-danger">14.85 BXG</td>
-                  </tr>
                 </tbody>
               </Table>
             </Card.Body>

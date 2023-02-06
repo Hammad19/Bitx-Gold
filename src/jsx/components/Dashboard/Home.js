@@ -48,9 +48,7 @@ const Home = () => {
 			const data1 = await axiosInstance.get('/api/stake/'+requestBody.wallet_address);
 			const data3 = await axiosInstance.get('/api/bonusrefer/'+requestBody.wallet_address);
 			
-			console.log(data, "data");
-			console.log(data1.data, "data1");
-			console.log(data3.data, "data3");
+			
 			
 			if(!data.wallet_address && !data1.data.wallet_address && !data3.data.wallet_address)
 			{
@@ -105,7 +103,7 @@ const Home = () => {
 		}
 		else
 		{
-		console.log(referalAddress);
+	
 		setLoader(true);
 		try {
 		  const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -115,7 +113,7 @@ const Home = () => {
 	
 		  const tx = await (await swap.addReferral(referalAddress)).wait();
 		  if (tx.events) {
-			console.log(tx.blockHash, "success");
+			
 			const requestBody = {
 			  wallet_address: state.auth.auth.walletaddress,
 			  refer_code: referalAddress,
@@ -128,7 +126,7 @@ const Home = () => {
 				});
 			  });
 	
-			console.log(data);
+			
 	
 			if (data === "Refered Successfully.") {
 			  toast.success(data);

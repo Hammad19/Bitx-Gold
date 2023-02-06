@@ -55,18 +55,11 @@ export function loginAction(email, password, navigate) {
         saveTokenInLocalStorage(response.data);
         runLogoutTimer(dispatch, response.data.expiresIn * 1000, navigate);
         dispatch(loginConfirmedAction(response.data));
-        //console.log('kk------1');
-        //console.log(kk);
-        //console.log(response.data);
-        //console.log('kk------2');
-        //return response.data;
-        //return 'success';
-        //history.push('/dashboard');
+      
         navigate("/dashboard");
       })
       .catch((error) => {
-        //console.log('error');
-        //console.log(error);
+      
         const errorMessage = formatError(error.response.data);
         dispatch(loginFailedAction(errorMessage));
       });
@@ -119,15 +112,12 @@ export function connectedToMetaMask(address,token,isAdmin) {
 export function connectToMetaMask(navigate,address, token) {
   return (dispatch) => {
     window.ethereum.enable().then((accounts) => {
-      console.log(token);
-
-      
-      console.log("account");
+  
 
       if(address ==="0x4fad12ed6776b85e55f06742787a494a8370e")
       {
 
-        console.log("admin");
+        
         let tokenDetails = {
           token: token,
           expiresIn: 3600,

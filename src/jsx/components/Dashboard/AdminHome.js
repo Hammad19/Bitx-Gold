@@ -45,7 +45,7 @@ const AdminHome = () => {
 
   // Active data
   const chageData = (frist, sec) => {
-    console.log(data.length);
+    
     for (var i = 0; i < data.length; ++i) {
       if (i >= frist && i < sec) {
         data[i].classList.remove("d-none");
@@ -73,7 +73,7 @@ const AdminHome = () => {
   // use effect
   useEffect(() => {
     setData(document.querySelectorAll("#future_wrapper tbody tr"));
-    console.log(data.length);
+    
   }, [test]);
 
   const FetchData = async () => {
@@ -108,7 +108,7 @@ const AdminHome = () => {
   }, []);
 
   const AcceptRequest = async (id) => {
-    console.log("hello world");
+    
     setLoader(true);
     try {
       const requestBody = {
@@ -121,7 +121,7 @@ const AdminHome = () => {
           console.log(error);
         });
 
-      console.log(response);
+     
       if (response) {
         toast.success("Request Approved");
         setLoader(false);
@@ -133,7 +133,7 @@ const AdminHome = () => {
   };
 
   const RejectRequest = async (id) => {
-    console.log("hello world");
+   
     setLoader(true);
     try {
       const requestBody = {
@@ -146,7 +146,7 @@ const AdminHome = () => {
           console.log(error);
         });
 
-      console.log(response);
+    
       if (response) {
         toast.success("Request Approved");
         setLoader(false);
@@ -172,7 +172,7 @@ const AdminHome = () => {
   const [referalAddress, setreferalAddress] = useState("");
 
   const getBonus = async () => {
-    console.log(referalAddress);
+  
     const requestBody = {
       wallet_address: state.auth.auth.walletaddress,
       refer_code: referalAddress,
@@ -185,7 +185,7 @@ const AdminHome = () => {
         });
       });
 
-    console.log(data);
+   
 
     if (data === "Refered Successfully.") {
       toast.success(data);

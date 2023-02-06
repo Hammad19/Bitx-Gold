@@ -68,7 +68,7 @@ function Login(props) {
           };
 
           const { data } = await axiosInstance.post("/user/login/", dt);
-          console.log(data, "data[1]12121");
+         
           if (data.status) {
             setToken(data.access);
           }
@@ -90,7 +90,7 @@ function Login(props) {
   //useeffect for data to redirect it to dashboard
   useEffect(() => {
     if (token !== "") {
-      console.log(token, "token");
+     
       dispatch(connectToMetaMask(navigate,data.address, token));
     }
   }, [token]);

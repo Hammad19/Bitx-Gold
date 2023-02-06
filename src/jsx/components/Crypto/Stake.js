@@ -16,8 +16,12 @@ import axiosInstance from "../../../services/AxiosInstance";
 import { useSelector } from "react-redux";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { useContext } from "react";
+import Loader from "../Loader/Loader";
+import { set } from "lodash";
 
 const Stake = () => {
+
+  const [loader, setLoader] = useState(false);
   const { changeBackground } = useContext(ThemeContext);
   useEffect(() => {
     changeBackground({ value: "dark", label: "Dark" });
@@ -67,6 +71,8 @@ const Stake = () => {
   }, []);
 
   const FetchData = async () => {
+
+    setLoader(true);
     const requestBody = {
       wallet_address: state.auth.auth.walletaddress,
     };
@@ -81,7 +87,7 @@ const Stake = () => {
     const data2 = await axiosInstance.get(
       "/api/refer/" + requestBody.wallet_address
     );
-    console.log(data2.data, "data2");
+   
 
     if (data2.data.isRefered == false) {
       handleShow();
@@ -107,8 +113,9 @@ const Stake = () => {
     setTotalAmountClaimed(amountclaimed);
     setAmountAlreadyStaked(data1.data.bxg);
     const date = new Date(data1.data.stake_time);
-    console.log(date);
+   
     setstartTime(date);
+    setLoader(false);
   };
   useEffect(() => {
     FetchData();
@@ -116,6 +123,7 @@ const Stake = () => {
 
   //handleclaim
   const handleStake = async () => {
+    setLoader(true);
     if (amountToStake <= 0) {
       toast.error("Please enter amount to stake", {
         position: "top-center",
@@ -136,10 +144,10 @@ const Stake = () => {
         if (bxgApprove.events) {
           const tx = await (await staking.stake(amount)).wait();
           const stakedId = tx.events[2].args.stakedId;
-          console.log(stakedId.toString());
+        
           setStakingId(stakedId.toString()); // send this id to the backend
           if (tx.events) {
-            console.log(tx.blockHash, "stakesuccess");
+         
             toast.success(tx.blockHash, {
               position: "top-center",
               style: { minWidth: 180 },
@@ -151,7 +159,7 @@ const Stake = () => {
               stake_id: stakedId,
             };
 
-            console.log(requestBody);
+       
 
             const { data } = await axiosInstance
               .post("/api/stake/", requestBody)
@@ -162,7 +170,7 @@ const Stake = () => {
                 });
               });
             if (data.stake_time) {
-              console.log(data);
+       
               const date = new Date(data.stake_time);
               setstartTime(date);
               setTotalAmountStaked(data.bxg);
@@ -190,10 +198,12 @@ const Stake = () => {
         });
       }
     }
+    setLoader(false);
   };
 
   const handleUnstake = async (bxgvalue) => {
-    console.log(bxgvalue);
+    setLoader(true);
+   
     if (bxgvalue <= 0) {
       toast.error("Please Enter Value Greater then Zero", {
         position: "top-center",
@@ -214,7 +224,7 @@ const Stake = () => {
             blockhash: tx.blockHash,
           };
 
-          console.log(requestBody);
+        
 
           const { data } = await axiosInstance
             .put("/api/stake/", requestBody)
@@ -225,7 +235,7 @@ const Stake = () => {
               });
             });
           if (data.stake_time) {
-            console.log(data);
+          
             //setstartTime(data.stake_time);
             setTotalAmountStaked(data.bxg);
             toast.success("UnStaked Successfully", {
@@ -246,10 +256,12 @@ const Stake = () => {
         });
       }
     }
+    setLoader(false);
   };
 
   const handleClaim = async (bxgvalue1,stakingID) => {
-    console.log(bxgvalue1);
+    setLoader(true);
+  
     if (bxgvalue1 <= 0) {
       toast.error("Amount less then Zero", {
         position: "top-center",
@@ -271,7 +283,7 @@ const Stake = () => {
             blockhash: tx.blockHash,
           };
 
-          console.log(requestBody, "requestBody");
+     
 
           const { data } = await axiosInstance
             .put("/api/stake/", requestBody)
@@ -282,7 +294,7 @@ const Stake = () => {
               });
             });
           if (data.stake_time) {
-            console.log(data);
+            
             setstartTime(new Date());
             setTotalAmountStaked(data.bxg);
             toast.success("Claimed Successfully", {
@@ -303,6 +315,7 @@ const Stake = () => {
         });
       }
     }
+    setLoader(false);
   };
 
   const [isreferred, setisreferred] = useState(false);
@@ -311,7 +324,8 @@ const Stake = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const getBonus = async () => {
-    console.log(referalAddress);
+    setLoader(true);
+    
 
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -328,7 +342,7 @@ const Stake = () => {
         wallet_address: address,
         refer_code: referalAddress,
       };
-      console.log(requestBody);
+    
       const { data } = await axiosInstance
         .post("/api/refer/", requestBody)
         .catch((err) => {
@@ -341,10 +355,10 @@ const Stake = () => {
         toast.error(data.message, {
           position: "top-center",
         });
+        setLoader(false);
         return;
       }
 
-      //console.log(data);
       const referalAddressarray = [
         data.data.refer1
           ? data.data.refer1
@@ -356,16 +370,15 @@ const Stake = () => {
           ? data.data.refer3
           : "0x0000000000000000000000000000000000000000",
       ];
-      console.log(referalAddressarray, "referalAddressarray");
+      
 
       const tx = await (
         await stake.addReferral([address, address, address], address)
       ).wait();
       if (tx.blockHash) {
-        console.log(tx.blockHash, "success");
+       
 
-        //console.log(data);
-
+     
         if (data.data.isRefered === true) {
           toast.success(data);
           setisreferred(true);
@@ -380,6 +393,7 @@ const Stake = () => {
         style: { minWidth: 180 },
       });
     }
+    setLoader(false);
   };
 
   const timer = (StartTime) => {
@@ -397,8 +411,6 @@ const Stake = () => {
     );
     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-    //console.log(`${months}m ${days}d ${hours}h ${minutes}m ${seconds}s `);
 
     string1 = `${days}d ${hours}h ${minutes}m ${seconds}s `;
 
@@ -446,7 +458,7 @@ const Stake = () => {
 
   const handleChange = (e) => {
     setBxgvalue(e.target.value);
-    console.log(e.target.value);
+    
   };
 
   useEffect(() => {
@@ -456,6 +468,11 @@ const Stake = () => {
     <>
       <Toaster />
 
+      {loader === true ? (
+        <Loader/>
+      ) : (
+        
+      <>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Staking Referal Code</Modal.Title>
@@ -551,7 +568,7 @@ const Stake = () => {
                                     <input
                                       value={amountToStake}
                                       onChange={(e) => {
-                                        console.log(e.target.value);
+                                     
                                         SetAmountToStake(e.target.value);
                                       }}
                                       type="text"
@@ -681,12 +698,15 @@ const Stake = () => {
 									</svg> */}
                     {/* <span>0.00</span> */}
                   </div>
+                  <br></br>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      </>
+    )}
     </>
   );
 };

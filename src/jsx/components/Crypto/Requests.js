@@ -42,7 +42,7 @@ const Requests = () => {
 
   // Active data
   const chageData = (frist, sec) => {
-    console.log(data.length);
+  
     for (var i = 0; i < data.length; ++i) {
       if (i >= frist && i < sec) {
         data[i].classList.remove("d-none");
@@ -70,8 +70,7 @@ const Requests = () => {
   // use effect
   useEffect(() => {
     setData(document.querySelectorAll("#future_wrapper tbody tr"));
-    console.log(data.length);
-    console.log(data.length);
+   
   }, [test]);
 
   const FetchData = async () => {
@@ -118,7 +117,7 @@ const Requests = () => {
       };
 
       if (tx.events) {
-        console.log(tx.events);
+        
         setLoader(true);
         const {data} = await axiosInstance
           .put("/api/bxg/" + id, requestBody)
@@ -149,7 +148,7 @@ const Requests = () => {
   };
 
   const RejectRequest = async (id) => {
-    //console.log("hello world");
+    
     setLoader(true);
     try {
       const requestBody = {
@@ -162,7 +161,7 @@ const Requests = () => {
           console.log(error);
         });
 
-      console.log(response);
+      
       if (response) {
         toast.success("Request Rejected Successfully");
         setLoader(false);
@@ -188,7 +187,7 @@ const Requests = () => {
   const [referalAddress, setreferalAddress] = useState("");
 
   const getBonus = async () => {
-    console.log(referalAddress);
+    
     const requestBody = {
       wallet_address: state.auth.auth.walletaddress,
       refer_code: referalAddress,
@@ -201,7 +200,7 @@ const Requests = () => {
         });
       });
 
-    console.log(data);
+    
 
     if (data === "Refered Successfully.") {
       toast.success(data);

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import { Dropdown } from "react-bootstrap";
@@ -14,9 +14,12 @@ import { useState } from "react";
 import axiosInstance from "../../../services/AxiosInstance";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import Loader from "../Loader/Loader";
+import { ThemeContext } from "../../../context/ThemeContext";
 const Buy = () => {
   // create a static value of 6.19931
 
+  const [loader, setloader] = useState(false);
   const [value, setValue] = useState(0);
   const [bxgvalue, setBxgvalue] = useState(0);
   //total usdt value
@@ -29,15 +32,27 @@ const Buy = () => {
   const [usdtToken, setusdtToken] = useState();
   //create handlebuy
 
+  const { changeBackground } = useContext(ThemeContext);
+
+
+
   const getSellData = async () => {
+
+
+    
+
+    
+
     setaddresses(await provider.send("eth_requestAccounts", []));
-    console.log(addresses[0], "addresses");
+    
     setaddress(addresses[0]);
     setswap(new ethers.Contract(bitXSwap.address, bitXSwap.abi, signer));
     setusdtToken(new ethers.Contract(usdt.address, usdt.abi, signer));
   };
 
   const getvaluer = async () => {
+    setloader(true);
+
     try {
       const { data } = await axios.get("https://www.goldapi.io/api/XAU/USD", {
         headers: {
@@ -50,16 +65,22 @@ const Buy = () => {
         setValue(data["price_gram_24k"] / 10);
       }
     } catch (err) {
-      console.log(err);
+      toast.error("Server Error", {
+        position: "top-center",
+        style: { minWidth: 180 },
+      });
     }
+    setloader(false);
   };
 
   useEffect(() => {
+    changeBackground({ value: "dark", label: "Dark" });
     getvaluer();
     getSellData();
   }, []);
 
   const handleBuy = async () => {
+    setloader(true);
     if (bxgvalue === 0) {
       toast.error("Please enter a valid amount", {
         position: "top-center",
@@ -74,15 +95,13 @@ const Buy = () => {
         if (bxgApprove.events) {
           const tx = await (await swap.swapBuy(amount)).wait();
           if (tx.events) {
-            console.log(tx.blockHash, "tx hash buy");
+         
             toast.success(tx.blockHash, {
               position: "top-center",
               style: { minWidth: 180 },
             });
 
-            console.log(address, "address");
-            console.log(bxgvalue, "bxgvalue");
-            console.log(totalUsd, "totalUsd");
+            
 
             const requestBody = {
               wallet_address: addresses[0],
@@ -99,7 +118,7 @@ const Buy = () => {
                 });
               });
             if (data) {
-              console.log(data);
+             
               toast.success(data, {
                 position: "top-center",
                 style: { minWidth: 180 },
@@ -119,11 +138,12 @@ const Buy = () => {
         });
       }
     }
+    setloader(false);
   };
 
   const handleChange = (e) => {
     setBxgvalue(e.target.value);
-    console.log(e.target.value);
+  
   };
 
   useEffect(() => {
@@ -132,6 +152,10 @@ const Buy = () => {
   return (
     <>
       <Toaster />
+      {loader === true ? (
+        <Loader/>
+      ) : (
+       
       <div
         className="row "
         style={{
@@ -235,6 +259,7 @@ const Buy = () => {
           </div>
         </div>
       </div>
+      )}
     </>
   );
 };
