@@ -7,9 +7,7 @@ import { Button, Dropdown, Form, Modal, Nav, Tab } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 //Import Components
 import { ThemeContext } from "../../../context/ThemeContext";
-import BalanceCardSlider from "./Dashboard/BalanceCardSlider";
-//import MorrisDonught from './Dashboard/MorrisDonught';
-import OrderForm from "./Dashboard/OrderForm";
+
 //import ServerStatusBar from './Dashboard/ServerStatusBar';
 import { LtcIcon, BtcIcon, XtzIcon, EthIcon } from "./SvgIcon";
 import OrderTab from "../Trading/Future/OrderTab";

@@ -30,62 +30,20 @@ import Stake from './components/Crypto/Stake';
 //admin
 import Requests from "./components/Crypto/Requests";
 
-//Report 
-import History from './components/Report/History';
-import Order from './components/Report/Order';
-import Reports from './components/Report/Reports';
-import User from './components/Report/User';
-import Contact from './components/Report/Contact';
-import Activity from './components/Report/Activity';
 
 
-/// Bootstrap
-import UiAlert from "./components/bootstrap/Alert";
-import UiAccordion from "./components/bootstrap/Accordion";
-import UiBadge from "./components/bootstrap/Badge";
-import UiButton from "./components/bootstrap/Button";
-import UiModal from "./components/bootstrap/Modal";
-import UiButtonGroup from "./components/bootstrap/ButtonGroup";
-import UiListGroup from "./components/bootstrap/ListGroup";
-import UiCards from "./components/bootstrap/Cards";
-import UiCarousel from "./components/bootstrap/Carousel";
-import UiDropDown from "./components/bootstrap/DropDown";
-import UiPopOver from "./components/bootstrap/PopOver";
-import UiProgressBar from "./components/bootstrap/ProgressBar";
-import UiTab from "./components/bootstrap/Tab";
-import UiPagination from "./components/bootstrap/Pagination";
-import UiGrid from "./components/bootstrap/Grid";
-import UiTypography from "./components/bootstrap/Typography";
 
-/// Plugins
-import Select2 from "./components/PluginsMenu/Select2/Select2";
-import MainNouiSlider from "./components/PluginsMenu/NouiSlider/MainNouiSlider";
-import MainSweetAlert from "./components/PluginsMenu/SweetAlert/SweetAlert";
-import Toastr from "./components/PluginsMenu/Toastr/Toastr";
-import JqvMap from "./components/PluginsMenu/JqvMap/JqvMap";
-import Lightgallery from "./components/PluginsMenu/Lightgallery/Lightgallery";
+
 
 //Redux
 //import Todo from "./pages/Todo";
 
 // Widget
-import Widget from "./pages/Widget";
-
-/// Table
-import SortingTable from "./components/table/SortingTable/SortingTable";
-import FilteringTable from "./components/table/FilteringTable/FilteringTable";
-import BootstrapTable from "./components/table/BootstrapTable";
-
-/// Form
-import Element from "./components/Forms/Element/Element";
-import Wizard from "./components/Forms/Wizard/Wizard";
-import CkEditor from "./components/Forms/CkEditor/CkEditor";
-import Pickers from "./components/Forms/Pickers/Pickers";
-import FormValidation from "./components/Forms/FormValidation/FormValidation";
 
 
 
 
+import BonusReferral from "./components/Crypto/BonusReferral";
 
 
 
@@ -97,6 +55,7 @@ import FormValidation from "./components/Forms/FormValidation/FormValidation";
 import { ThemeContext } from "../context/ThemeContext";
 import { useSelector } from "react-redux";
 import AdminHome from "./components/Dashboard/AdminHome";
+import StakingReferral from "./components/Crypto/StakingReferral";
 
 
 
@@ -115,7 +74,8 @@ const Markup = () => {
     {url:"buy", component: <Buy/>},
     {url:"sell", component: <Sell/>},
     {url:"stake", component: <Stake/>},
-
+    {url:"bonus-referral", component: <BonusReferral/>},
+    {url:"staking-referral", component: <StakingReferral/>},
 
     //admin
     { url: "admindashboard", component: <AdminHome /> },
@@ -123,13 +83,7 @@ const Markup = () => {
     
 
 
-    //Report 
-    {url :"history", component: <History />},
-    {url :"orders", component: <Order />},
-    {url :"reports", component: <Reports />},
-    {url :"user", component: <User />},
-    {url :"contact", component: <Contact />},
-    {url :"activity", component: <Activity />},
+    
 	/////Demo
     // { url: "sidebar-primary", component: <Theme1 /> },
     // { url: "horizontal-sidebar", component: <Theme2 /> },
@@ -162,51 +116,8 @@ const Markup = () => {
     // { url: "chart-sparkline", component: <SparklineChart /> },
     // { url: "chart-chartjs", component: <ChartJs /> },    
     // { url: "chart-apexchart", component: <ApexChart /> },
-    // { url: "chart-rechart", component: <RechartJs /> },
-//
-    ///// Bootstrap
-    { url: "ui-alert", component: <UiAlert /> },
-    { url: "ui-badge", component: <UiBadge /> },
-    { url: "ui-button", component: <UiButton /> },
-    { url: "ui-modal", component: <UiModal /> },
-    { url: "ui-button-group", component: <UiButtonGroup /> },
-    { url: "ui-accordion", component: <UiAccordion /> },
-    { url: "ui-list-group", component: <UiListGroup /> },
-    { url: "ui-card", component: <UiCards />},
-    { url: "ui-carousel", component: <UiCarousel /> },
-    { url: "ui-dropdown", component: <UiDropDown /> },
-    { url: "ui-popover", component: <UiPopOver /> },
-    { url: "ui-progressbar", component: <UiProgressBar /> },
-    { url: "ui-tab", component: <UiTab /> },
-    { url: "ui-pagination", component: <UiPagination /> },
-    { url: "ui-typography", component: <UiTypography /> },
-    { url: "ui-grid", component: <UiGrid /> },
-	//
-    ///// Plugin
-    { url: "uc-select2", component: <Select2 /> },
-    { url: "uc-noui-slider", component: <MainNouiSlider /> },
-    { url: "uc-sweetalert", component: <MainSweetAlert /> },
-    { url: "uc-toastr", component: <Toastr /> },
-    { url: "map-jqvmap", component: <JqvMap /> },
-    { url: "uc-lightgallery", component: <Lightgallery /> },
-//
-	/////Redux
-	//{ url: "todo", component: Todo },	
-	//
-    ///// Widget
-    { url: "widget-basic", component: <Widget /> },
-
-    ///// Form
-    { url: "form-element", component: <Element /> },
-    { url: "form-wizard", component: <Wizard /> },
-    { url: "form-ckeditor", component: <CkEditor /> },
-    { url: "form-pickers", component: <Pickers /> },
-    { url: "form-validation", component: <FormValidation /> },
-//
-    ///// table
-	  { url: 'table-filtering', component: <FilteringTable /> },
-    { url: 'table-sorting', component: <SortingTable /> },
-    { url: "table-bootstrap-basic", component: <BootstrapTable /> },
+    
+    
 //
     ///// pages
     //{ url: "page-register", component: Registration },

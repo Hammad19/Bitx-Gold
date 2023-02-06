@@ -4,9 +4,6 @@ import { Swiper, SwiperSlide,  } from "swiper/react";
 
 import "swiper/css";
 
-import TotalBalanceArea from './TotalBalanceArea';
-import ProfitLossArea from './ProfitLossArea';
-import TotaldipositChart from './TotaldipositChart';
 
 const BalanceCardSlider = () =>{
     return(

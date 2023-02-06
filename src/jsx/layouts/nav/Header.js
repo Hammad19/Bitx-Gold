@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import LogoutPage from './Logout';
 
 import United from "../../../images/United.png";
-import avatar from "../../../images/avatar/1.jpg";
+import avatar from "../../../images/avatar/2.jpg";
 import profile from "../../../images/profile/pic1.jpg";
 
 

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, Dropdown, Form, Modal, Nav, Tab } from "react-bootstrap";
 import Select from "react-select";
-import OrderForm from "../Dashboard/Dashboard/OrderForm";
+
 
 //import icon from src/icons/coin.png;
 import bxgicon from "../../../icons/buy and sell/tokenbxg.png";

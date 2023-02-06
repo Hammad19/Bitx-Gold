@@ -33,12 +33,24 @@ export const MenuList = [
         to: 'stake',
     },
 
-    //Affiliate Awards
-    {   
+
+
+    {
         title:'Affiliate Awards',
         //classsChange: 'mm-collapse',
         iconStyle: <i className="material-icons">grid_view</i>,
-        to: 'dashboard',
+        content: [
+            {
+                title: 'Bonus Referral',
+                iconStyle: <i className="material-icons">grid_view</i>,
+                to: 'bonus-referral',
+            },
+            {
+                title: 'Staking Referral',
+                iconStyle: <i className="material-icons">grid_view</i>,
+                to: 'staking-referral',
+            },
+        ]
     },
 
     //Settings
