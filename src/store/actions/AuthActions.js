@@ -55,11 +55,10 @@ export function loginAction(email, password, navigate) {
         saveTokenInLocalStorage(response.data);
         runLogoutTimer(dispatch, response.data.expiresIn * 1000, navigate);
         dispatch(loginConfirmedAction(response.data));
-      
+
         navigate("/dashboard");
       })
       .catch((error) => {
-      
         const errorMessage = formatError(error.response.data);
         dispatch(loginFailedAction(errorMessage));
       });
@@ -73,10 +72,10 @@ export function loginFailedAction(data) {
   };
 }
 
-export function loginConfirmedAction(address,token,isAdmin) {
+export function loginConfirmedAction(address, token, isAdmin) {
   return {
     type: LOGIN_CONFIRMED_ACTION,
-    payload: {address,token,isAdmin},
+    payload: { address, token, isAdmin },
   };
 }
 
@@ -101,53 +100,40 @@ export function loadingToggleAction(status) {
   };
 }
 
-export function connectedToMetaMask(address,token,isAdmin) {
+export function connectedToMetaMask(address, token, isAdmin) {
   return {
     type: CONNECTED_TO_METAMASK,
-    payload: {address,token,isAdmin},
+    payload: { address, token, isAdmin },
   };
 }
 
 //Create function for requesting to connect with MetaMask
-export function connectToMetaMask(navigate,address, token) {
+export function connectToMetaMask(navigate, address, token) {
   return (dispatch) => {
     window.ethereum.enable().then((accounts) => {
-  
-
-      if(address ==="0x4fad12ed6776b85e55f06742787a494a8370e")
-      {
-
-        
+      if (address === "0x4fad12ed6776b85e55f06742787a494a8370e") {
         let tokenDetails = {
           token: token,
           expiresIn: 3600,
           walletaddress: address,
-          isAdmin : true
-        
-        }
+          isAdmin: true,
+        };
         saveTokenInLocalStorage(tokenDetails);
-        dispatch(connectedToMetaMask(address,token,tokenDetails.isAdmin));
+        dispatch(connectedToMetaMask(address, token, tokenDetails.isAdmin));
         navigate("/admindashboard");
-      }
-
-      else
-      {
-
+      } else {
         let tokenDetails = {
           token: token,
           expiresIn: 3600,
           walletaddress: address,
-          isAdmin : false
-        
-        }
+          isAdmin: false,
+        };
         saveTokenInLocalStorage(tokenDetails);
-        dispatch(connectedToMetaMask(address,token,false));
+        dispatch(connectedToMetaMask(address, token, false));
         navigate("/dashboard");
       }
-      
     });
   };
 }
 
 //Create function for requesting to connect with MetaMask
-

@@ -50,7 +50,12 @@ function Login(props) {
       const addresses = await provider.send("eth_requestAccounts", []);
       const address = addresses[0];
       const balance = await provider.getBalance(address);
-
+      if (chainId !== 97) {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${Number(97).toString(16)}` }],
+        });
+      }
       if (chainId === 97) {
         setdata({
           address: address,
@@ -68,16 +73,11 @@ function Login(props) {
           };
 
           const { data } = await axiosInstance.post("/user/login/", dt);
-         
+
           if (data.status) {
             setToken(data.access);
           }
         }
-      } else {
-        toast.error("Invalid Network. Kindly switch to BNB Testnet", {
-          position: "top-center",
-          style: { minWidth: 180 },
-        });
       }
     } catch (err) {
       toast.error(err.message, {
@@ -90,8 +90,7 @@ function Login(props) {
   //useeffect for data to redirect it to dashboard
   useEffect(() => {
     if (token !== "") {
-     
-      dispatch(connectToMetaMask(navigate,data.address, token));
+      dispatch(connectToMetaMask(navigate, data.address, token));
     }
   }, [token]);
 
@@ -152,8 +151,6 @@ function Login(props) {
                                 {props.successMessage}
                               </div>
                             )}
-
-
 
                             <div className="text-center bottom">
                               <br></br>
